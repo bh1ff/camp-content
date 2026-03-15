@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robocode Spring Camp 2026 - Lesson Plans</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary:#00dcde; --secondary:#ff00bf; --tertiary:#ff9752;
+    --bg-white:#FFFFFF; --bg-light-turq:#EDFFFE; --bg-light-pink:#FFF0FA;
+    --bg-light-tan:#FFF6ED; --bg-dark:#003439;
+    --btn-primary:#83FDFF; --btn-secondary:#FF98F4; --btn-tertiary:#FFB371;
+    --text-dark:#003439; --text-light:#FFFFFF;
+    --radius:16px; --radius-sm:10px;
+    --shadow:0 4px 20px rgba(0,60,67,.08);
+    --shadow-hover:0 8px 32px rgba(0,60,67,.16);
+    --mech-accent:#00dcde; --mech-bg:#EDFFFE; --mech-dark:#003439;
+    --elec-accent:#ff00bf; --elec-bg:#FFF0FA; --elec-dark:#3a0035;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Nunito',sans-serif;background:var(--bg-dark);color:var(--text-dark);line-height:1.6;overflow-x:hidden}
+
+  /* ── LOCK ── */
+  #lock-screen{position:fixed;inset:0;background:linear-gradient(135deg,var(--bg-dark),#005a5c,var(--bg-dark));display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s,transform .5s}
+  #lock-screen.hide{opacity:0;transform:scale(1.05);pointer-events:none}
+  .lock-box{background:var(--bg-white);border-radius:var(--radius);padding:48px 40px;text-align:center;max-width:420px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+  .lock-box .logo-text{font-size:2.4rem;font-weight:900;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px}
+  .lock-box .subtitle{font-size:.95rem;color:#5a7a7d;margin-bottom:28px;font-weight:600}
+  .lock-box input{width:100%;padding:14px 18px;border:2px solid #d0e8e9;border-radius:10px;font-size:1rem;font-family:'Nunito',sans-serif;outline:none;transition:border-color .2s;text-align:center;letter-spacing:1px}
+  .lock-box input:focus{border-color:var(--primary)}
+  .lock-box input.error{border-color:#e74c3c;animation:shake .4s}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+  .lock-box button{margin-top:16px;width:100%;padding:14px;border:none;border-radius:10px;background:var(--btn-primary);color:var(--text-dark);font-size:1rem;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:background .2s,transform .1s}
+  .lock-box button:hover{background:var(--primary)}
+  .lock-box button:active{transform:scale(.97)}
+  .lock-error{color:#e74c3c;font-size:.85rem;margin-top:10px;min-height:20px;font-weight:600}
+
+  /* ── APP ── */
+  #app{display:none}
+  #app.show{display:block}
+
+  /* ── SELECTOR (HOME) ── */
+  #home{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:40px 24px}
+  .home-title{text-align:center;margin-bottom:12px}
+  .home-title h1{font-size:2.2rem;font-weight:900;color:var(--text-light)}
+  .home-title h1 span{background:linear-gradient(135deg,var(--primary),var(--btn-primary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .home-title p{color:#7ab;font-size:1rem;font-weight:600;margin-top:4px;letter-spacing:1px}
+  .selector-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:700px;width:100%}
+  .selector-card{border-radius:20px;padding:48px 36px;text-align:center;cursor:pointer;transition:transform .25s,box-shadow .25s;position:relative;overflow:hidden}
+  .selector-card:hover{transform:translateY(-6px)}
+  .sel-mech{background:linear-gradient(135deg,#00dcde 0%,#009a9c 100%);box-shadow:0 8px 40px rgba(0,220,222,.3)}
+  .sel-mech:hover{box-shadow:0 16px 60px rgba(0,220,222,.45)}
+  .sel-elec{background:linear-gradient(135deg,#ff00bf 0%,#b8008a 100%);box-shadow:0 8px 40px rgba(255,0,191,.3)}
+  .sel-elec:hover{box-shadow:0 16px 60px rgba(255,0,191,.45)}
+  .selector-card .sel-icon{font-size:3rem;margin-bottom:16px;display:block}
+  .selector-card h2{font-size:1.4rem;font-weight:900;color:#fff;margin-bottom:6px}
+  .selector-card p{color:rgba(255,255,255,.85);font-size:.9rem;font-weight:600}
+  .selector-card .sel-count{display:inline-block;margin-top:14px;padding:6px 16px;border-radius:20px;background:rgba(255,255,255,.2);color:#fff;font-size:.8rem;font-weight:800}
+
+  /* ── GRID VIEW ── */
+  .grid-view{display:none;min-height:100vh}
+  .grid-view.active{display:block}
+  .grid-header{padding:28px 24px 24px;text-align:center}
+  .grid-header.mech-header{background:linear-gradient(135deg,#003439,#005a5c)}
+  .grid-header.elec-header{background:linear-gradient(135deg,#3a0035,#5c005a)}
+  .grid-header .gh-back{display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,.6);font-size:.85rem;font-weight:700;cursor:pointer;border:none;background:none;font-family:'Nunito',sans-serif;margin-bottom:14px;transition:color .2s}
+  .grid-header .gh-back:hover{color:#fff}
+  .grid-header h2{font-size:1.8rem;font-weight:900;color:#fff;margin-bottom:4px}
+  .grid-header p{color:rgba(255,255,255,.7);font-size:.95rem;font-weight:600}
+  .grid-body{padding:28px 24px 60px;max-width:1100px;margin:0 auto}
+  .grid-body.mech-body{background:var(--mech-bg)}
+  .grid-body.elec-body{background:var(--elec-bg)}
+  .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+
+  /* Card */
+  .card{background:var(--bg-white);border-radius:var(--radius);box-shadow:var(--shadow);cursor:pointer;transition:transform .2s,box-shadow .2s;overflow:hidden;position:relative}
+  .card:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover)}
+  .card-top{padding:18px 20px 12px;display:flex;align-items:flex-start;gap:14px}
+  .card-icon{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+  .card.mech .card-icon{background:var(--mech-bg)}
+  .card.elec .card-icon{background:var(--elec-bg)}
+  .card-info{flex:1}
+  .card-info h3{font-size:1.05rem;font-weight:800;line-height:1.3}
+  .card-info .concept{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+  .card.mech .concept{color:var(--mech-accent)}
+  .card.elec .concept{color:var(--elec-accent)}
+  .card-bottom{padding:0 20px 14px;display:flex;align-items:center;justify-content:space-between}
+  .badge{padding:3px 9px;border-radius:20px;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.3px}
+  .b-vlow{background:#e8faf0;color:#1a8a4a}
+  .b-low{background:#e8f4fa;color:#1a6a9a}
+  .b-med{background:#fff4e8;color:#9a6a1a}
+  .b-high{background:#fae8e8;color:#9a1a1a}
+  .time-est{font-size:.75rem;color:#8aaa;font-weight:600}
+  .card-arrow{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:1.2rem;color:#c0dada;transition:color .2s}
+  .card:hover .card-arrow{color:var(--primary)}
+
+  /* ── MODULE VIEW ── */
+  .module-view{display:none}
+  .module-view.active{display:block}
+
+  .module-hero{padding:0;overflow:hidden}
+  .module-hero.mech{background:linear-gradient(135deg,#003439,#006a6c)}
+  .module-hero.elec{background:linear-gradient(135deg,#3a0035,#6a005a)}
+  .hero-inner{max-width:900px;margin:0 auto;padding:32px 28px 28px}
+  .hero-back{display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,.6);font-size:.85rem;font-weight:700;cursor:pointer;border:none;background:none;font-family:'Nunito',sans-serif;margin-bottom:18px;transition:color .2s}
+  .hero-back:hover{color:#fff}
+  .hero-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+  .hero-num{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1rem;color:var(--text-dark)}
+  .mech .hero-num{background:var(--btn-primary)}
+  .elec .hero-num{background:var(--btn-secondary)}
+  .hero-badges{display:flex;gap:6px;flex-wrap:wrap}
+  .hero-badge{padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:800;text-transform:uppercase;background:rgba(255,255,255,.15);color:rgba(255,255,255,.9)}
+  .hero-title{font-size:1.8rem;font-weight:900;color:#fff;margin-bottom:2px}
+  .hero-concept{font-size:.95rem;font-weight:700;letter-spacing:1px}
+  .mech .hero-concept{color:var(--btn-primary)}
+  .elec .hero-concept{color:var(--btn-secondary)}
+
+  .module-body{max-width:900px;margin:0 auto;padding:0 28px 48px}
+  .module-body.mech-bg{background:var(--mech-bg)}
+  .module-body.elec-bg{background:var(--elec-bg)}
+  /* full-width bg behind module-body */
+  .module-body-wrap{width:100%}
+  .module-body-wrap.mech-wrap{background:var(--mech-bg)}
+  .module-body-wrap.elec-wrap{background:var(--elec-bg)}
+
+  /* Section blocks */
+  .m-section{background:var(--bg-white);border-radius:var(--radius);box-shadow:var(--shadow);margin-top:22px;overflow:hidden}
+  .m-section-head{padding:16px 22px;display:flex;align-items:center;gap:10px}
+  .m-section-head.sh-turq{background:linear-gradient(135deg,#e0fffe,#cdfcfb);border-bottom:2px solid #b0eeee}
+  .m-section-head.sh-pink{background:linear-gradient(135deg,#ffe8f8,#ffd6f2);border-bottom:2px solid #f5b8e8}
+  .m-section-head.sh-tan{background:linear-gradient(135deg,#fff6ed,#ffe8d5);border-bottom:2px solid #ffd4a8}
+  .m-section-head.sh-green{background:linear-gradient(135deg,#e8f5e8,#d5ecd5);border-bottom:2px solid #a8d4a8}
+  .m-section-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;background:rgba(255,255,255,.7)}
+  .m-section-head h3{font-size:.95rem;font-weight:800;color:var(--text-dark)}
+  .m-section-head .s-time{margin-left:auto;font-size:.75rem;font-weight:700;color:#8aaa;white-space:nowrap}
+  .m-section-body{padding:18px 22px}
+  .m-section-body p{font-size:.9rem;color:#3a5a5d;line-height:1.7}
+  .m-section-body p strong{color:var(--text-dark)}
+  .m-section-body ul{padding-left:18px;margin-top:6px}
+  .m-section-body li{font-size:.9rem;color:#3a5a5d;line-height:1.7;margin-bottom:5px}
+  .m-section-body li strong{color:var(--text-dark)}
+
+  /* Challenge - HERO section */
+  .m-challenge{background:var(--bg-white);border-radius:var(--radius);box-shadow:var(--shadow);margin-top:22px;overflow:hidden;border:2px solid var(--tertiary)}
+  .m-challenge .ch-head{padding:18px 22px;background:linear-gradient(135deg,#ff9752,#e87a30);display:flex;align-items:center;gap:10px}
+  .m-challenge .ch-head h3{font-size:1.05rem;font-weight:900;color:#fff}
+  .m-challenge .ch-head .ch-icon{font-size:1.3rem}
+  .m-challenge .ch-head .s-time{margin-left:auto;font-size:.75rem;font-weight:700;color:rgba(255,255,255,.8)}
+  .challenge-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:18px 22px}
+  .challenge-card{background:#FFFAF5;border-radius:var(--radius-sm);padding:14px;border:1px solid #ffe4c8}
+  .challenge-card h4{font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#c06000;margin-bottom:6px}
+  .challenge-card p{font-size:.85rem;color:#5a4a3d;line-height:1.55}
+  .scoring{margin-top:6px;padding:0;list-style:none}
+  .scoring li{font-size:.85rem;color:#5a4a3d;line-height:1.5;padding:3px 0;padding-left:16px;position:relative}
+  .scoring li::before{content:'';position:absolute;left:0;top:10px;width:8px;height:8px;border-radius:50%}
+  .scoring .gold::before{background:#FFD700}
+  .scoring .silver::before{background:#C0C0C0}
+  .scoring .bronze::before{background:#CD7F32}
+
+  /* Kit */
+  .kit-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+  .kit-chip{padding:5px 11px;border-radius:8px;font-size:.8rem;font-weight:600}
+  .mech-chip{background:var(--mech-bg);color:var(--text-dark)}
+  .elec-chip{background:var(--elec-bg);color:#6a1a5a}
+
+  /* Tips */
+  .tip-box{background:#f0faf0;border-radius:var(--radius-sm);padding:14px 16px;border-left:4px solid #4CAF50}
+  .tip-box p{font-size:.88rem;color:#2a5a2a}
+
+  /* Prev/Next */
+  .module-nav{display:flex;justify-content:space-between;align-items:stretch;padding:22px 0 0;gap:14px}
+  .mn-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border-radius:var(--radius-sm);border:2px solid #d0e8e9;background:var(--bg-white);font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:700;color:var(--text-dark);cursor:pointer;transition:all .2s}
+  .mn-btn:hover{border-color:var(--primary);background:var(--mech-bg)}
+  .mn-label{font-size:.68rem;color:#8aaa;font-weight:600;text-transform:uppercase;letter-spacing:1px}
+  .mn-title{font-weight:800}
+
+  /* Footer */
+  .site-footer{background:var(--bg-dark);padding:22px;text-align:center;color:#7ab;font-size:.82rem;font-weight:600}
+  .site-footer span{color:var(--btn-primary)}
+
+  @media(max-width:600px){
+    .selector-grid{grid-template-columns:1fr}
+    .cards-grid{grid-template-columns:1fr}
+    .challenge-grid{grid-template-columns:1fr}
+    .selector-card{padding:32px 24px}
+    .hero-title{font-size:1.4rem}
+    .hero-inner{padding:24px 18px}
+    .module-body{padding:0 16px 36px}
+    .module-nav{flex-direction:column}
+    .home-title h1{font-size:1.6rem}
+  }
+</style>
+</head>
+<body>
+
+<div id="lock-screen">
+  <div class="lock-box">
+    <div class="logo-text">ROBOCODE</div>
+    <div class="subtitle">Spring Camp 2026 &mdash; Lesson Plans</div>
+    <input type="password" id="pwd-input" placeholder="Enter password" autocomplete="off"/>
+    <button onclick="checkPwd()">Unlock</button>
+    <div class="lock-error" id="lock-error"></div>
+  </div>
+</div>
+
+<div id="app">
+
+  <!-- HOME SELECTOR -->
+  <div id="home">
+    <div class="home-title">
+      <h1><span>ROBOCODE</span> Lesson Plans</h1>
+      <p>Spring Camp 2026 &mdash; Choose a module</p>
+    </div>
+    <div class="selector-grid">
+      <div class="selector-card sel-mech" onclick="showGrid('mech')">
+        <span class="sel-icon">&#9881;&#65039;</span>
+        <h2>Mechanical Engineering</h2>
+        <p>Levers, pulleys, cams, gears, cranks &amp; linkages</p>
+        <span class="sel-count">8 Projects</span>
+      </div>
+      <div class="selector-card sel-elec" onclick="showGrid('elec')">
+        <span class="sel-icon">&#9889;</span>
+        <h2>Electronics</h2>
+        <p>Arduino circuits, sensors, LEDs, servos &amp; motors</p>
+        <span class="sel-count">14 Projects</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRIDS -->
+  <div id="grid-mech" class="grid-view"></div>
+  <div id="grid-elec" class="grid-view"></div>
+
+  <!-- MODULE -->
+  <div id="module-view" class="module-view"></div>
+
+  <footer class="site-footer">
+    <span>ROBOCODE</span> &mdash; Spring Camp 2026 &mdash; Imagine. Build. Improve.
+  </footer>
+</div>
+
+<script>
+const P = [
+  // ── MECH ──
+  {id:'m1',type:'mech',num:'M1',icon:'&#128640;',title:'Catapult',concept:'Levers',diff:'Low',dc:'b-low',time:'40 min',
+    obj:'Understand how levers amplify force and trade distance for power. Identify the fulcrum, effort, and load in a Class 1 lever.',
+    intro:{t:'5 min',text:'Ask: <strong>"Where have you seen levers in real life?"</strong> (Seesaws, bottle openers, scissors.) A lever is a rigid bar that pivots on a fulcrum. Push down on one side and the other goes up &mdash; change the distances to multiply force or distance.'},
+    build:{t:'20 min',steps:['Slot the <strong>base</strong> flat. Attach the two <strong>side supports</strong> vertically into the base slots.','Thread the <strong>throwing arm</strong> through the side supports so it pivots freely. The fulcrum pin goes through the holes.','Attach the <strong>stop piece</strong> behind the arm to limit backward swing.','Fix the <strong>cup/cradle</strong> onto the long end of the arm using the tab-and-slot joint.','Place a soft projectile in the cup, press down on the short end, and release!']},
+    ch:{title:'Target Launch Challenge',brief:'Place a target at increasing distances. Each team gets 5 launches per distance. Score based on accuracy.',rules:'3 rounds: 30cm, 60cm, 1m from the catapult. Teams may adjust fulcrum position between rounds. No modifications to the arm.',
+      sc:[{m:'gold',t:'Land inside the target at all 3 distances'},{m:'silver',t:'Hit the target at 2 out of 3 distances'},{m:'bronze',t:'Hit the target at 1 distance'}],bonus:'Bonus point: closest to the exact centre at 1m.'},
+    kit:['1 &times; Base','2 &times; Side Supports','1 &times; Throwing Arm','1 &times; Stop Piece','1 &times; Cup / Cradle','1 &times; Fulcrum Pin','Soft projectiles','Target cup'],
+    tips:'Let students experiment with fulcrum position BEFORE the challenge. Use marshmallows or scrunched paper as projectiles. Have a tape measure ready.'},
+
+  {id:'m2',type:'mech',num:'M2',icon:'&#9875;',title:'Pulley Lift',concept:'Pulleys',diff:'Low',dc:'b-low',time:'40 min',
+    obj:'Understand how pulleys redirect force and how compound pulleys reduce the effort needed to lift heavy loads (mechanical advantage).',
+    intro:{t:'5 min',text:'Ask: <strong>"How do builders lift heavy stuff to the top of a building?"</strong> A single pulley changes direction (pull down to lift up). A compound pulley divides weight &mdash; two pulleys means half the effort but double the rope.'},
+    build:{t:'20 min',steps:['Attach the two <strong>uprights</strong> into the <strong>base</strong>. Lay the <strong>top beam</strong> across and lock.','Mount the pulley wheel at the top of the beam.','Attach the <strong>winch drum</strong> and <strong>crank handle</strong> to the base.','Thread string from the <strong>hook/load plate</strong> over the pulley down to the winch drum.','Add weight and turn the crank to lift.']},
+    ch:{title:'Heavy Lifter Challenge',brief:'How many coins/washers can your pulley lift to the top without slipping? Increase load each round.',rules:'Start with 1 coin. Add 1 per round. If string slips or structure tips, that\'s your limit. 2 minutes to optimise between attempts.',
+      sc:[{m:'gold',t:'Lift 10+ coins smoothly to the top'},{m:'silver',t:'Lift 6&ndash;9 coins'},{m:'bronze',t:'Lift 3&ndash;5 coins'}],bonus:'Bonus: fastest team to lift 5 coins to the top (timed).'},
+    kit:['1 &times; Base','2 &times; Uprights','1 &times; Top Beam','1 &times; Winch Drum','1 &times; Crank Handle','1 &times; Hook / Load Plate','String','Coins / washers'],
+    tips:'Use identical washers for standardised weight. Demonstrate single vs double pulley so students feel the effort difference. Keep spare string.'},
+
+  {id:'m3',type:'mech',num:'M3',icon:'&#127912;',title:'Automata Card',concept:'Cams',diff:'Low',dc:'b-low',time:'40 min',
+    obj:'Understand how a cam converts rotary motion into linear (up-and-down) motion. Explore how different cam shapes create different movement patterns.',
+    intro:{t:'5 min',text:'Ask: <strong>"How can spinning something make another thing go up and down?"</strong> An egg-shaped wheel (cam) pushes a follower rod up when the fat part rotates underneath. This is how engines open valves!'},
+    build:{t:'20 min',steps:['Assemble the <strong>stand/base</strong> upright.','Insert the <strong>cam</strong> (egg-shaped disc) onto the axle.','Slide the <strong>follower</strong> into the <strong>guide</strong> above the cam.','Attach the <strong>handle</strong> to turn the cam by hand.','Decorate a card figure on top of the follower &mdash; it bobs up and down!']},
+    ch:{title:'Automata Performance Show',brief:'Design the most creative animated character. Present a 30-second "performance" telling a mini story through movement.',rules:'10 minutes for decoration. 30-second performances. Class votes on creativity, movement quality, storytelling.',
+      sc:[{m:'gold',t:'Clear story, creative character, smooth movement'},{m:'silver',t:'Good character design with consistent movement'},{m:'bronze',t:'Working automata with basic decoration'}],bonus:'Bonus: use multiple cam shapes for different motion patterns.'},
+    kit:['1 &times; Stand / Base','1 &times; Cam','1 &times; Follower','1 &times; Guide','1 &times; Handle','Card, markers, craft materials'],
+    tips:'Have different cam shapes available (round, snail, heart). Provide coloured card, googly eyes, pipe cleaners. Great module for creative expression alongside engineering.'},
+
+  {id:'m4',type:'mech',num:'M4',icon:'&#9881;&#65039;',title:'Gear-Down Motor',concept:'Gears',diff:'Medium',dc:'b-med',time:'40 min',
+    obj:'Understand gear ratios: small gear driving large gear trades speed for torque. Learn why motors need gearboxes.',
+    intro:{t:'5 min',text:'Ask: <strong>"Why can\'t a tiny motor spin a car wheel directly?"</strong> Motors spin fast with little torque. Gears slow the spin while increasing force. Small gear driving big gear = slower but stronger.'},
+    build:{t:'20 min',steps:['Secure the <strong>base</strong>. Insert the two <strong>axle supports</strong>.','Mount the <strong>motor mount</strong> and clip in the DC motor.','Attach the small <strong>driver gear</strong> to the motor shaft.','Place the large <strong>driven gear</strong> on the output axle.','Mesh the gears. Attach the <strong>output drum/sled</strong>.','Connect battery pack and watch the output turn slowly but powerfully.']},
+    ch:{title:'Tug of War Challenge',brief:'Attach a string to the output drum and tie it to a weighted object. Which gearbox drags the heaviest load across 30cm?',rules:'Same motor and battery for all teams. Only gear arrangement can differ. 3 attempts. Object must travel full 30cm.',
+      sc:[{m:'gold',t:'Drag 200g+ across 30cm'},{m:'silver',t:'Drag 100&ndash;199g across 30cm'},{m:'bronze',t:'Drag 50&ndash;99g across 30cm'}],bonus:'Bonus: correctly calculate and state your gear ratio before the pull.'},
+    kit:['1 &times; Base','2 &times; Axle Supports','1 &times; Motor Mount','1 &times; Small Gear','1 &times; Large Gear','1 &times; Output Drum','1 &times; DC Motor','1 &times; Battery Pack','String, weights'],
+    tips:'Have students count teeth and calculate ratios before the challenge. Use identical batteries. Small bags of coins work as standardised weights.'},
+
+  {id:'m5',type:'mech',num:'M5',icon:'&#127914;',title:'Hand-Crank Automata',concept:'Crank + Cam',diff:'Medium',dc:'b-med',time:'45 min',
+    obj:'Combine a crank with a cam to create a complex automaton. Understand how combining simple machines produces sophisticated motion.',
+    intro:{t:'5 min',text:'Show Victorian automata examples. Ask: <strong>"How can turning a handle make a character wave, jump, and spin all at once?"</strong> Cranks and cams working together on the same axle!'},
+    build:{t:'25 min',steps:['Assemble the <strong>base</strong> and slot in the two <strong>side frames</strong>.','Thread the axle through both frames. Attach the <strong>crank disc</strong> and the <strong>cam</strong>.','Set the <strong>follower</strong> into the <strong>guide</strong> above the cam.','Attach the <strong>scene panel</strong> backdrop.','Add a character to the follower and decorate.','Turn the crank &mdash; the character bobs against the backdrop!']},
+    ch:{title:'Story Machine Showcase',brief:'Create a mechanical scene that tells a story in one crank rotation. Present with narration.',rules:'Must use at least one cam-driven element. Must have a backdrop. 1-minute presentation max. Teacher + peer vote.',
+      sc:[{m:'gold',t:'Multiple moving elements, clear narrative, polished scene'},{m:'silver',t:'Working mechanism with character and backdrop'},{m:'bronze',t:'Functional crank-cam with basic scene'}],bonus:'Bonus: add a second character on a different cam for offset timing.'},
+    kit:['1 &times; Base','2 &times; Side Frames','1 &times; Crank Disc','1 &times; Cam','1 &times; Follower','1 &times; Guide','1 &times; Scene Panel','Craft materials'],
+    tips:'Show a YouTube clip of Victorian automata to inspire. Encourage "what story does your scene tell?" thinking. Have scissors and glue available.'},
+
+  {id:'m6',type:'mech',num:'M6',icon:'&#127959;&#65039;',title:'Tower Crane',concept:'Pulleys + Gears',diff:'Medium',dc:'b-med',time:'45 min',
+    obj:'Apply pulleys and gears together in a real-world context. Understand how cranes combine multiple simple machines.',
+    intro:{t:'5 min',text:'Ask: <strong>"How does a crane lift steel beams hundreds of metres high?"</strong> Motor with gears (power) connected to a winch with pulleys (height). Today we combine both in one machine.'},
+    build:{t:'25 min',steps:['Build the <strong>base</strong> with counterweight area. Slot the two <strong>tower frames</strong> vertically.','Attach the horizontal <strong>arm</strong> (jib) to the top.','Mount the <strong>winch drum</strong> with two <strong>gears</strong> for mechanical advantage.','Thread string from winch, up through tower, over a pulley at the jib tip, attach <strong>hook plate</strong>.','Add crank handle. Turn to lift loads.']},
+    ch:{title:'Crane Operator Challenge',brief:'Lift an object from "ground zone" to "rooftop zone" without dropping it. Fastest clean lift wins.',rules:'Object must be held 3 seconds at top without swinging. Drop or tip = no count. 3 attempts, best time. Timer starts at first crank.',
+      sc:[{m:'gold',t:'Clean lift in under 15 seconds'},{m:'silver',t:'Clean lift in under 30 seconds'},{m:'bronze',t:'Successful lift, no drops'}],bonus:'Bonus: successfully lift a heavier object (add extra weight to hook).'},
+    kit:['1 &times; Base','2 &times; Tower Frames','1 &times; Arm (Jib)','1 &times; Winch Drum','2 &times; Gears','1 &times; Hook Plate','String','Counterweight items'],
+    tips:'Use coins or Blu-Tack as counterweight. Have a stopwatch ready. Emphasise structural stability &mdash; discuss why real cranes have counterweights.'},
+
+  {id:'m7',type:'mech',num:'M7',icon:'&#128664;',title:'Rover Ramp Challenge',concept:'Wheels + Gears + Motor',diff:'High',dc:'b-high',time:'45 min',
+    obj:'Integrate wheels, gears, and a DC motor to build a powered vehicle. Understand gear reduction for climbing ramps.',
+    intro:{t:'5 min',text:'Ask: <strong>"Why do electric cars need a gearbox?"</strong> Motors spin fast with little torque. Wheels need slower spin with more force, especially uphill. Today you build a rover and race it up a ramp!'},
+    build:{t:'25 min',steps:['Assemble the <strong>chassis</strong> and attach <strong>side rails</strong>.','Mount the <strong>motor mount</strong> and clip in the DC motor. Attach small gear to shaft.','Fix the <strong>drive wheel/axle</strong> with large gear meshed to motor gear.','Attach both <strong>wheels</strong> &mdash; drive at rear, free-spin at front.','Connect battery pack, switch on, watch it move!']},
+    ch:{title:'Ramp Race Grand Prix',brief:'Round 1: Flat ground speed race (2m). Round 2: Ramp climb at increasing angles. Steepest climb wins!',rules:'Flat race: fastest over 2m. Ramp: 15&deg;, 25&deg;, 35&deg; incline. Must reach top under own power. Rubber bands on wheels allowed.',
+      sc:[{m:'gold',t:'Climb 35&deg; ramp AND win the flat race'},{m:'silver',t:'Climb 25&deg; ramp OR top 2 in flat race'},{m:'bronze',t:'Climb 15&deg; ramp and complete the flat race'}],bonus:'Bonus: carry a coin on top up the 25&deg; ramp without it falling off.'},
+    kit:['1 &times; Chassis','2 &times; Side Rails','2 &times; Wheels','1 &times; Drive Wheel / Axle','1 &times; Motor Mount','1 &times; DC Motor','1 &times; Battery Pack','Rubber bands','Board for ramp'],
+    tips:'Build the ramp from a board on books. Use identical batteries. Give it real race-day energy &mdash; this is a crowd-pleaser!'},
+
+  {id:'m8',type:'mech',num:'M8',icon:'&#129302;',title:'Robotic Gripper',concept:'Linkages',diff:'Medium',dc:'b-med',time:'45 min',
+    obj:'Understand how linkage mechanisms transmit and transform motion. Learn how a single input controls two jaws &mdash; the foundation of robotic arms.',
+    intro:{t:'5 min',text:'Ask: <strong>"How does a robot arm pick things up?"</strong> Scissor tongs: squeeze one end, the other closes. This is a linkage &mdash; bars connected by pivots that transfer motion. Used in robots, excavators, and prosthetic hands.'},
+    build:{t:'25 min',steps:['Assemble the <strong>handle frame</strong> &mdash; two bars you squeeze together.','Connect <strong>scissor linkage</strong> arms with pivot pins. Each X-cross transfers motion forward.','Attach two <strong>gripper jaws</strong> at the far end.','Add <strong>jaw pads</strong> (rubber/foam) for grip.','Add <strong>return band</strong> (elastic) to spring open.','Test: pick up a pen, ball, block.']},
+    ch:{title:'Robotic Rescue Mission',brief:'5 objects of varying difficulty. Pick up and transport each to a collection zone using only the gripper. No hands on objects!',rules:'Objects: cylinder (pen), sphere (ball), flat (card), heavy (glue stick), tiny (eraser). 3-minute time limit. Must be placed, not dropped.',
+      sc:[{m:'gold',t:'Transport all 5 objects in under 3 minutes'},{m:'silver',t:'Transport 3&ndash;4 objects'},{m:'bronze',t:'Transport 1&ndash;2 objects'}],bonus:'Bonus: complete the course one-handed.'},
+    kit:['1 &times; Handle Frame','4 &times; Scissor Arms','5 &times; Pivot Pins','2 &times; Gripper Jaws','2 &times; Jaw Pads','1 &times; Return Band'],
+    tips:'Prepare the 5 objects in advance. Start easy, progress to harder. Show a picture of a factory robot arm. The elastic return band is key.'},
+
+  // ── ELEC ──
+  {id:'e1',type:'elec',num:'E1',icon:'&#128161;',title:'Reaction Light',concept:'Digital Output + Input',diff:'Very Low',dc:'b-vlow',time:'35 min',
+    obj:'Control an LED with Arduino and read a pushbutton. Understand digital HIGH/LOW and reaction time measurement.',
+    intro:{t:'5 min',text:'Ask: <strong>"How fast are your reactions?"</strong> Computers measure in milliseconds. We\'ll build a game: LED lights at a random time, press a button as fast as you can.'},
+    build:{t:'20 min',steps:['Connect an <strong>LED</strong> with <strong>220&#8486; resistor</strong> to a digital pin.','Wire a <strong>pushbutton</strong> to another pin with pull-down resistor.','Code: random delay (2&ndash;5s), LED on, start timer, wait for press, calculate time.','Display result via Serial Monitor.']},
+    ch:{title:'Fastest Reflexes Tournament',brief:'5 rounds per player. Average time determines ranking. Class leaderboard on the whiteboard!',rules:'Press before LED = false start penalty (+500ms). Best 3 of 5 count. Another student verifies Serial Monitor.',
+      sc:[{m:'gold',t:'Average under 250ms'},{m:'silver',t:'Average under 400ms'},{m:'bronze',t:'Average under 600ms'}],bonus:'Bonus: add false start detection with buzzer penalty.'},
+    kit:['Arduino','Breadboard','LED','220&#8486; Resistor','Pushbutton','Jumper Wires'],
+    tips:'Draw leaderboard on whiteboard &mdash; students get competitive! Average human reaction is ~250ms. Show how to read Serial Monitor clearly.'},
+
+  {id:'e2',type:'elec',num:'E2',icon:'&#128264;',title:'Light Alarm',concept:'Analog Sensor',diff:'Low',dc:'b-low',time:'35 min',
+    obj:'Use an LDR to detect light levels. Trigger a buzzer alarm when light is detected (box opened, fridge door opened).',
+    intro:{t:'5 min',text:'Ask: <strong>"How does a security system know when a door opens?"</strong> An LDR changes resistance with brightness. Arduino reads this and triggers alarms.'},
+    build:{t:'20 min',steps:['Voltage divider: <strong>LDR</strong> + <strong>10k&#8486; resistor</strong> on analog pin.','<strong>Buzzer</strong> on a digital pin.','Code: read LDR continuously. Light exceeds threshold = sound buzzer.','Calibrate: cover LDR for "dark" value, set threshold above it.']},
+    ch:{title:'Secret Box Heist',brief:'Circuit inside a box (closed=dark=safe). Teams try to open each other\'s boxes and grab the token without triggering the alarm!',rules:'Each team calibrates sensitivity. Opponents attempt silent open. 3 attempts. Alarm sounding 1+ seconds = fail.',
+      sc:[{m:'gold',t:'Grab token with zero alarm triggers'},{m:'silver',t:'Grab token, alarm under 2 seconds total'},{m:'bronze',t:'Grab the token (alarm OK)'}],bonus:'Bonus: add a 3-second disarm window with secret button press.'},
+    kit:['Arduino','Breadboard','LDR','10k&#8486; Resistor','Buzzer','Jumper Wires','Small box'],
+    tips:'Shoe boxes work perfectly. Have students name their "vault". One of the most fun modules!'},
+
+  {id:'e3',type:'elec',num:'E3',icon:'&#128680;',title:'Tilt Guard Alarm',concept:'Digital Sensor',diff:'Low',dc:'b-low',time:'35 min',
+    obj:'Use a tilt switch to detect movement. Trigger buzzer and LED warning on tilt.',
+    intro:{t:'5 min',text:'Ask: <strong>"How could you protect your diary from snooping siblings?"</strong> A tilt switch has a metal ball inside &mdash; upright = circuit closed, tilted = broken. We detect when someone moves our stuff!'},
+    build:{t:'20 min',steps:['<strong>Tilt switch</strong> to digital input.','<strong>Buzzer</strong> and <strong>LED</strong> as outputs.','Code: tilt detected = flash LED + buzzer for 3 seconds.','Add "reset" button to silence.']},
+    ch:{title:'Operation Steady Hand',brief:'Attach sensor to a tray. Carry across an obstacle course without triggering the alarm. Fewest triggers wins!',rules:'3m course with 2 obstacles (step over book, go around chair). Each trigger = 1 point. Lowest score wins. 60-second limit.',
+      sc:[{m:'gold',t:'0 alarm triggers'},{m:'silver',t:'1&ndash;2 triggers'},{m:'bronze',t:'3&ndash;5 triggers'}],bonus:'Bonus: add a disturbance counter on Serial Monitor.'},
+    kit:['Arduino','Breadboard','Tilt Switch','Buzzer','LED','220&#8486; Resistor','Jumper Wires','Tray'],
+    tips:'Set up obstacle course before session. Plastic trays work well. Like the classic "Operation" game &mdash; students love it!'},
+
+  {id:'e4',type:'elec',num:'E4',icon:'&#128262;',title:'Dimmer Lamp',concept:'Analog Input + PWM',diff:'Low',dc:'b-low',time:'35 min',
+    obj:'Potentiometer controls LED brightness. Understand analog input (0&ndash;1023) and PWM output (0&ndash;255).',
+    intro:{t:'5 min',text:'Ask: <strong>"How does a dimmer switch work?"</strong> Arduino uses PWM: on/off thousands of times per second. More "on" time = brighter.'},
+    build:{t:'20 min',steps:['<strong>Potentiometer</strong> to analog input (A0).','<strong>LED</strong> with <strong>resistor</strong> to a PWM pin (~).','Code: read pot (0&ndash;1023), map to 0&ndash;255, <code>analogWrite()</code>.','Turn knob &mdash; brightness changes smoothly!']},
+    ch:{title:'Light Level Match',brief:'Teacher shows a target brightness. Students dial their pot to match. Closest value (from Serial Monitor) wins each round!',rules:'5 rounds. Teacher sets target with reference LED. Students match by eye. On "lock", stop turning. Teacher reads values.',
+      sc:[{m:'gold',t:'Within &plusmn;20 on 4+ rounds'},{m:'silver',t:'Within &plusmn;50 on 3+ rounds'},{m:'bronze',t:'Within &plusmn;100 on 2+ rounds'}],bonus:'Bonus: add 3 LEDs as a bar graph (33%, 66%, 100%).'},
+    kit:['Arduino','Breadboard','LED','220&#8486; Resistor','Potentiometer','Jumper Wires'],
+    tips:'Set up a reference Arduino at target brightness. Students love matching by feel then checking numbers.'},
+
+  {id:'e5',type:'elec',num:'E5',icon:'&#128274;',title:'Safe Cracker',concept:'Analog + Digital Logic',diff:'Low',dc:'b-low',time:'40 min',
+    obj:'Potentiometer "dial" + button = combination lock. Learn conditional logic and value range matching.',
+    intro:{t:'5 min',text:'Ask: <strong>"How does a combination lock work?"</strong> Turn dial to specific numbers in order. We use a pot as dial, button to confirm. Get the combo right = green LED!'},
+    build:{t:'25 min',steps:['<strong>Potentiometer</strong> to analog, <strong>pushbutton</strong> to digital.','Green <strong>LED</strong> (unlocked) + <strong>buzzer</strong> (wrong code).','Code: 3-number combo (e.g. 200, 600, 400). Turn dial, press button. &plusmn;50 of target = correct, else buzzer + reset.','All three correct = green LED + victory tone!']},
+    ch:{title:'Crack the Code Race',brief:'Teams set combos, then swap stations. Race to crack each other\'s codes!',rules:'2 min to set combo (write secretly for verification). 5 min and unlimited attempts to crack. Timer from first touch.',
+      sc:[{m:'gold',t:'Crack in under 60 seconds'},{m:'silver',t:'Crack in under 3 minutes'},{m:'bronze',t:'Crack in under 5 minutes'}],bonus:'Bonus: tighten tolerance from &plusmn;50 to &plusmn;25.'},
+    kit:['Arduino','Breadboard','Potentiometer','Pushbutton','LED (green)','Buzzer','220&#8486; Resistor','Jumper Wires'],
+    tips:'Students write combos on folded paper for verification. The &plusmn;50 tolerance is achievable &mdash; don\'t go tighter. Encourage systematic strategies.'},
+
+  {id:'e6',type:'elec',num:'E6',icon:'&#127744;',title:'Mini Fan / Spinner',concept:'DC Motor Control',diff:'Low',dc:'b-low',time:'35 min',
+    obj:'DC motors convert electrical energy to rotation. Control on/off and speed.',
+    intro:{t:'5 min',text:'Ask: <strong>"What makes a fan spin?"</strong> A motor! Magnets and coils create rotation. More voltage = faster. We\'ll build a fan and control speed.'},
+    build:{t:'20 min',steps:['<strong>DC motor</strong> + battery pack via <strong>switch</strong>.','Attach card fan blade to motor shaft.','<strong>Level up:</strong> Arduino + transistor for PWM speed control.','Potentiometer for variable speed.']},
+    ch:{title:'Wind Power Derby',brief:'Design the best blade shape. Measure how far your fan blows a tissue ball in 10 seconds.',rules:'Max 8cm blade diameter. 3 attempts. Same motor speed for all. Measure tissue ball distance.',
+      sc:[{m:'gold',t:'Blow tissue ball 40cm+ in 10s'},{m:'silver',t:'25&ndash;39cm'},{m:'bronze',t:'10&ndash;24cm'}],bonus:'Bonus: create a colour-blending spinner disc (optical illusion art!).'},
+    kit:['DC Motor','Battery Pack / Arduino','Switch','Card / Paper','Scissors','Jumper Wires','Tissue balls'],
+    tips:'Pre-cut card circles as blade blanks. Use identical tissue balls. Safety: card/paper blades only.'},
+
+  {id:'e7',type:'elec',num:'E7',icon:'&#128682;',title:'Servo Gate',concept:'Servo Control',diff:'Medium',dc:'b-med',time:'40 min',
+    obj:'Control servo to precise angles. Understand DC motors (continuous spin) vs servos (precise position).',
+    intro:{t:'5 min',text:'Ask: <strong>"How does a car park barrier know where to stop?"</strong> Servos move to a specific angle and hold. Used in robotics, RC cars, automated doors.'},
+    build:{t:'20 min',steps:['<strong>Servo</strong> to PWM pin, 5V, GND.','Card barrier arm on servo horn.','<strong>Button</strong> or <strong>pot</strong> for control.','Code: button toggles 0&deg; (closed) / 90&deg; (open). Or pot for continuous angle.']},
+    ch:{title:'Toll Booth Speed Run',brief:'Open gate, roll marble through, close gate. Fastest cycle wins!',rules:'Gate starts at 0&deg;. On "GO": open, marble passes, close. Timer stops at 0&deg;. 3 attempts, best time.',
+      sc:[{m:'gold',t:'Cycle in under 3 seconds'},{m:'silver',t:'Under 5 seconds'},{m:'bronze',t:'Successful cycle (any time)'}],bonus:'Bonus: auto-close timer &mdash; gate opens for exactly 2s then closes.'},
+    kit:['Arduino','Servo Motor','Pushbutton / Potentiometer','Card for barrier','Jumper Wires','Marble'],
+    tips:'Build a cardboard toll booth surround for visual impact. Use a marble or small ball. Ensure servo horn is secure.'},
+
+  {id:'e8',type:'elec',num:'E8',icon:'&#128678;',title:'Traffic Lights',concept:'Sequencing + Timing',diff:'Low',dc:'b-low',time:'35 min',
+    obj:'Program timed output sequences. Understand state machines and real-world traffic automation.',
+    intro:{t:'5 min',text:'Ask: <strong>"Is there a person inside every traffic light?"</strong> No! Automated with timers. We program the UK sequence: Red &rarr; Red+Amber &rarr; Green &rarr; Amber &rarr; Red.'},
+    build:{t:'20 min',steps:['3 <strong>LEDs</strong> (R, Y, G) each with <strong>220&#8486; resistor</strong> on separate pins.','Code the UK sequence with delays.','<code>delay()</code> for timing (green=5s, amber=2s, red=5s).']},
+    ch:{title:'Junction Controller',brief:'Two teams pair up. Coordinate both light sets so when one is green, the other is red. Like a real crossroads!',rules:'Both run correct UK sequence. Never green on both (that\'s a crash!). Teacher observes for 2 minutes.',
+      sc:[{m:'gold',t:'Synced crossroads with pedestrian button'},{m:'silver',t:'Correctly alternating, no clashes'},{m:'bronze',t:'Single set running correct sequence'}],bonus:'Bonus: buzzer beeps during pedestrian crossing phase.'},
+    kit:['Arduino','Breadboard','3 &times; LEDs (R, Y, G)','3 &times; 220&#8486; Resistors','Jumper Wires'],
+    tips:'Print the UK traffic sequence diagram. The crossroads challenge requires logical thinking about state coordination. Build a cardboard crossroads for visual impact.'},
+
+  {id:'e9',type:'elec',num:'E9',icon:'&#128079;',title:'Clap / Tap Meter',concept:'Event Counting',diff:'Low',dc:'b-low',time:'35 min',
+    obj:'Count digital input events over time. Learn debouncing, timing windows, event-driven programming.',
+    intro:{t:'5 min',text:'Ask: <strong>"How many times can you clap in 10 seconds?"</strong> We build a device that counts taps in a time window.'},
+    build:{t:'20 min',steps:['<strong>Pushbutton</strong> or <strong>tilt switch</strong> as tap sensor.','<strong>Buzzer</strong> beeps each tap, <strong>LED</strong> for timer.','Code: LED on = start 10s window. Count taps. Time up = LED off, total to Serial Monitor.']},
+    ch:{title:'Speed Tapper Championship',brief:'Individual tournament! 3 rounds of 10-second tapping. Highest count on the leaderboard.',rules:'Button must be fully released between taps. Buzzer beeps as proof. Another student watches. Best of 3.',
+      sc:[{m:'gold',t:'50+ taps in 10 seconds'},{m:'silver',t:'35&ndash;49 taps'},{m:'bronze',t:'20&ndash;34 taps'}],bonus:'Bonus: two-player race with second button.'},
+    kit:['Arduino','Breadboard','Pushbutton / Tilt Switch','Buzzer','LED','220&#8486; Resistor','Jumper Wires'],
+    tips:'Gets LOUD &mdash; consider short buzzer clicks. Draw leaderboard. If counts seem unrealistic, discuss debouncing.'},
+
+  {id:'e10',type:'elec',num:'E10',icon:'&#127769;',title:'Night Light',concept:'Sensor-Driven Output',diff:'Very Low',dc:'b-vlow',time:'30 min',
+    obj:'Automatic night light: on when dark. Reinforce analog sensor reading and threshold logic.',
+    intro:{t:'5 min',text:'Ask: <strong>"How do street lights know when to turn on?"</strong> Light sensors! Below a brightness level, light switches on. Same principle.'},
+    build:{t:'15 min',steps:['Voltage divider: <strong>LDR</strong> + <strong>resistor</strong> on analog pin.','<strong>LED</strong> with <strong>220&#8486; resistor</strong> on digital/PWM pin.','Code: LDR below threshold = LED on. Above = off.','Cover LDR with hand to test!']},
+    ch:{title:'Smart Light Calibrator',brief:'Teacher slowly dims room. First light to turn on at the "just right" moment wins. Too early or too late = penalty.',rules:'Teacher dims in stages. Too early or too late = 1 penalty. "Just right" = when teacher says "NOW". 3 rounds.',
+      sc:[{m:'gold',t:'Perfect timing 3/3 rounds'},{m:'silver',t:'Perfect timing 2/3'},{m:'bronze',t:'Light works all rounds'}],bonus:'Bonus: PWM so LED gradually brightens as it gets darker.'},
+    kit:['Arduino','Breadboard','LDR','10k&#8486; Resistor','LED','220&#8486; Resistor','Jumper Wires'],
+    tips:'Use curtains/blinds or a desk lamp for room light control. Simple but satisfying. Great introductory module.'},
+
+  {id:'e11',type:'elec',num:'E11',icon:'&#10067;',title:'Quiz Buzzer',concept:'Multi-Input Logic',diff:'Medium',dc:'b-med',time:'40 min',
+    obj:'Handle multiple inputs. Determine which was pressed first. Understand race conditions and priority logic.',
+    intro:{t:'5 min',text:'Ask: <strong>"In a quiz show, how does the host know who buzzed first?"</strong> The system detects first press and locks out others. We build this for two players!'},
+    build:{t:'25 min',steps:['<strong>2 pushbuttons</strong> on separate digital inputs.','<strong>2 LEDs</strong> (different colours) + <strong>buzzer</strong>.','Code: first pressed = light LED + buzzer. Other locked out until host reset.']},
+    ch:{title:'Quiz Show Tournament',brief:'Real quiz! Teacher reads questions. First to buzz answers. Correct = 2pts, wrong = -1pt (opponent can steal for 1pt).',rules:'10 questions per round. Wait for full question. False start = -1pt. Winners face each other in semis/finals.',
+      sc:[{m:'gold',t:'Win the final'},{m:'silver',t:'Reach the final'},{m:'bronze',t:'Win at least one round'}],bonus:'Bonus: 3-2-1 countdown LED sequence before each question.'},
+    kit:['Arduino','Breadboard','2 &times; Pushbuttons','2 &times; LEDs','Buzzer','2 &times; 220&#8486; Resistors','Jumper Wires'],
+    tips:'Prepare 20+ STEM quiz questions on cards. Tournament bracket creates excitement. Small prizes for the winner. Test lockout before tournament!'},
+
+  {id:'e12',type:'elec',num:'E12',icon:'&#127922;',title:'Spin Timer',concept:'Motor + Timing',diff:'Medium',dc:'b-med',time:'40 min',
+    obj:'Control motor run time with code. Understand timed events and random selection.',
+    intro:{t:'5 min',text:'Ask: <strong>"How could you make a fair random spinner?"</strong> Press button, spin for random time, gradually slow, stop. Today you build one!'},
+    build:{t:'25 min',steps:['<strong>DC motor</strong> via transistor to PWM pin.','Card spinner disc with coloured segments on shaft.','<strong>Potentiometer</strong> for speed, <strong>button</strong> to start.','Code: button starts full speed for random 2&ndash;6s, then gradually reduces PWM.']},
+    ch:{title:'Wheel of Fortune',brief:'Segments worth 10, 20, 50, 100 points. 5 spins per team. Highest total wins!',rules:'Spinner must stop naturally. Pointer must clearly show one segment. Lands on line = re-spin. Opponent reads score.',
+      sc:[{m:'gold',t:'Highest total points'},{m:'silver',t:'Second highest'},{m:'bronze',t:'Third highest'}],bonus:'Bonus: add "Bankrupt" and "Double" segments for drama!'},
+    kit:['Arduino','DC Motor','Battery Pack','Transistor','Potentiometer','Pushbutton','Card for disc','Jumper Wires'],
+    tips:'Pre-draw segment templates. Use a fixed pointer (cocktail stick). Ensure gradual slow-down. Students LOVE the gambling element.'},
+
+  {id:'e13',type:'elec',num:'E13',icon:'&#127752;',title:'Colour Mood Lamp',concept:'RGB LED + PWM',diff:'Medium',dc:'b-med',time:'40 min',
+    obj:'Mix colours with RGB LED. Understand additive colour theory and triple-channel PWM control.',
+    intro:{t:'5 min',text:'Ask: <strong>"How does a TV make millions of colours from three?"</strong> R, G, B light mix to create any colour. An RGB LED has all three. Vary each brightness to make any colour!'},
+    build:{t:'25 min',steps:['<strong>RGB LED</strong>: each leg to PWM pin through <strong>220&#8486; resistor</strong>.','<strong>Potentiometer</strong> to analog pin.','Code: pot cycles colour spectrum. Map 0&ndash;1023 to hue, convert to RGB.','Alternative: auto colour-fade loop.']},
+    ch:{title:'Colour Match Challenge',brief:'Teacher shows target colour (on screen or card). Teams dial their LED to match. Closest wins!',rules:'5 rounds: red, turquoise, purple, orange, white. 30 seconds per round. Teacher judges visually. Serial Monitor breaks ties.',
+      sc:[{m:'gold',t:'Closest match on 4+ colours'},{m:'silver',t:'Closest on 2&ndash;3'},{m:'bronze',t:'Closest on 1'}],bonus:'Bonus: match exact Robocode turquoise (#00dcde) &mdash; show RGB values!'},
+    kit:['Arduino','Breadboard','RGB LED','3 &times; 220&#8486; Resistors','Potentiometer','Jumper Wires'],
+    tips:'Print colour swatches. Paper tube around LED helps judge colour. Robocode turquoise = R:0, G:220, B:222.'},
+
+  {id:'e14',type:'elec',num:'E14',icon:'&#128272;',title:'Servo Lock Box',concept:'Servo + Logic',diff:'Medium',dc:'b-med',time:'45 min',
+    obj:'Servo locking mechanism + input logic = physical lock box. Capstone project combining servos, inputs, conditional logic.',
+    intro:{t:'5 min',text:'Ask: <strong>"How do electronic hotel safes work?"</strong> Enter code, motor moves bolt. We build the same: correct code = servo unlocks = box opens!'},
+    build:{t:'25 min',steps:['<strong>Servo</strong> on box with latch arm on horn.','<strong>Button</strong> and/or <strong>pot</strong> as input, <strong>LED</strong> for feedback.','Code: secret button pattern (3 short, 1 long). Correct = servo unlock + green LED. Wrong = red flash.','Add "lock" button to re-engage.']},
+    ch:{title:'Bank Vault Heist',brief:'Teams build lock boxes with secret codes. Swap &mdash; opposing teams have 5 minutes to crack the vault and grab the treasure!',rules:'Defending team sets code (sealed envelope for verification). 5 min, unlimited attempts. No physical force! Code mechanism only.',
+      sc:[{m:'gold',t:'Uncrackable vault OR crack in under 2 min'},{m:'silver',t:'Vault holds 3+ min OR crack in under 4 min'},{m:'bronze',t:'Functional lock box with working code'}],bonus:'Bonus: 3 wrong attempts = 30-second buzzer lockout.'},
+    kit:['Arduino','Servo Motor','Pushbutton','Potentiometer','LEDs (green + red)','220&#8486; Resistors','Box / Enclosure','Jumper Wires'],
+    tips:'Cardboard boxes with a flap work well. Place a sweet as "treasure". This is a capstone combining many skills.'}
+];
+
+// ── RENDER ──
+function renderGrids(){
+  ['mech','elec'].forEach(type=>{
+    const el=document.getElementById('grid-'+type);
+    const isMech=type==='mech';
+    const items=P.filter(p=>p.type===type);
+    el.innerHTML=`
+      <div class="grid-header ${isMech?'mech-header':'elec-header'}">
+        <button class="gh-back" onclick="goHome()">&#8249; Back</button>
+        <h2>${isMech?'Mechanical Engineering':'Electronics'}</h2>
+        <p>${isMech?'8 hands-on projects with laser-cut wooden kits':'14 Arduino-powered projects with sensors, LEDs, servos &amp; motors'}</p>
+      </div>
+      <div class="grid-body ${isMech?'mech-body':'elec-body'}">
+        <div class="cards-grid">${items.map(p=>`
+          <div class="card ${p.type}" onclick="openModule('${p.id}')">
+            <div class="card-top">
+              <div class="card-icon">${p.icon}</div>
+              <div class="card-info"><h3>${p.title}</h3><div class="concept">${p.concept}</div></div>
+            </div>
+            <div class="card-bottom">
+              <span class="badge ${p.dc}">${p.diff}</span>
+              <span class="time-est">${p.time}</span>
+            </div>
+            <div class="card-arrow">&#8250;</div>
+          </div>
+        `).join('')}</div>
+      </div>
+    `;
+  });
+}
+
+function showGrid(type){
+  document.getElementById('home').style.display='none';
+  document.getElementById('module-view').className='module-view';
+  document.querySelectorAll('.grid-view').forEach(g=>g.classList.remove('active'));
+  document.getElementById('grid-'+type).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function goHome(){
+  document.querySelectorAll('.grid-view').forEach(g=>g.classList.remove('active'));
+  document.getElementById('module-view').className='module-view';
+  document.getElementById('home').style.display='';
+  window.scrollTo(0,0);
+}
+
+function openModule(id){
+  const p=P.find(x=>x.id===id);if(!p)return;
+  const same=P.filter(x=>x.type===p.type);
+  const idx=same.indexOf(p);
+  const prev=idx>0?same[idx-1]:null;
+  const next=idx<same.length-1?same[idx+1]:null;
+  const cc=p.type==='mech'?'mech-chip':'elec-chip';
+  const wrap=p.type==='mech'?'mech-wrap':'elec-wrap';
+
+  const v=document.getElementById('module-view');
+  v.innerHTML=`
+    <div class="module-hero ${p.type}">
+      <div class="hero-inner">
+        <button class="hero-back" onclick="showGrid('${p.type}')">&#8249; Back to ${p.type==='mech'?'Mechanical':'Electronics'}</button>
+        <div class="hero-meta">
+          <div class="hero-num">${p.num}</div>
+          <div class="hero-badges">
+            <span class="hero-badge">${p.diff}</span>
+            <span class="hero-badge">${p.time}</span>
+          </div>
+        </div>
+        <div class="hero-title">${p.title}</div>
+        <div class="hero-concept">${p.concept}</div>
+      </div>
+    </div>
+    <div class="module-body-wrap ${wrap}">
+      <div class="module-body">
+
+        <div class="m-section">
+          <div class="m-section-head sh-turq"><div class="m-section-icon">&#127919;</div><h3>Learning Objective</h3></div>
+          <div class="m-section-body"><p>${p.obj}</p></div>
+        </div>
+
+        <div class="m-section">
+          <div class="m-section-head sh-pink"><div class="m-section-icon">&#128172;</div><h3>Introduction</h3><span class="s-time">${p.intro.t}</span></div>
+          <div class="m-section-body"><p>${p.intro.text}</p></div>
+        </div>
+
+        <div class="m-section">
+          <div class="m-section-head sh-turq"><div class="m-section-icon">&#128295;</div><h3>${p.type==='mech'?'Build Activity':'Build &amp; Code'}</h3><span class="s-time">${p.build.t}</span></div>
+          <div class="m-section-body"><ul>${p.build.steps.map(s=>'<li>'+s+'</li>').join('')}</ul></div>
+        </div>
+
+        <div class="m-challenge">
+          <div class="ch-head"><span class="ch-icon">&#127942;</span><h3>${p.ch.title}</h3><span class="s-time">10&ndash;15 min</span></div>
+          <div class="challenge-grid">
+            <div class="challenge-card"><h4>The Challenge</h4><p>${p.ch.brief}</p></div>
+            <div class="challenge-card"><h4>Rules</h4><p>${p.ch.rules}</p></div>
+            <div class="challenge-card"><h4>Scoring</h4><ul class="scoring">${p.ch.sc.map(s=>'<li class="'+s.m+'"><strong>'+s.m.charAt(0).toUpperCase()+s.m.slice(1)+':</strong> '+s.t+'</li>').join('')}</ul></div>
+            <div class="challenge-card"><h4>Bonus</h4><p>${p.ch.bonus}</p></div>
+          </div>
+        </div>
+
+        <div class="m-section">
+          <div class="m-section-head sh-tan"><div class="m-section-icon">&#128230;</div><h3>${p.type==='mech'?'Kit List':'Components'}</h3></div>
+          <div class="m-section-body"><div class="kit-chips">${p.kit.map(k=>'<span class="kit-chip '+cc+'">'+k+'</span>').join('')}</div></div>
+        </div>
+
+        <div class="m-section">
+          <div class="m-section-head sh-green"><div class="m-section-icon">&#128218;</div><h3>Teacher Tips</h3></div>
+          <div class="m-section-body"><div class="tip-box"><p>${p.tips}</p></div></div>
+        </div>
+
+        <div class="module-nav">
+          <div>${prev?'<button class="mn-btn" onclick="openModule(\''+prev.id+'\')">&#8249;&nbsp;<div><div class="mn-label">Previous</div><div class="mn-title">'+prev.title+'</div></div></button>':'<div></div>'}</div>
+          <div>${next?'<button class="mn-btn" onclick="openModule(\''+next.id+'\')"><div><div class="mn-label">Next</div><div class="mn-title">'+next.title+'</div></div>&nbsp;&#8250;</button>':'<div></div>'}</div>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  document.getElementById('home').style.display='none';
+  document.querySelectorAll('.grid-view').forEach(g=>g.classList.remove('active'));
+  v.className='module-view active';
+  window.scrollTo(0,0);
+}
+
+// ── PASSWORD ──
+function checkPwd(){
+  const i=document.getElementById('pwd-input'),e=document.getElementById('lock-error');
+  if(i.value==='Robocoding1?'){
+    document.getElementById('lock-screen').classList.add('hide');
+    document.getElementById('app').classList.add('show');
+    setTimeout(()=>document.getElementById('lock-screen').style.display='none',600);
+  }else{i.classList.add('error');e.textContent='Incorrect password.';setTimeout(()=>i.classList.remove('error'),400);}
+}
+document.getElementById('pwd-input').addEventListener('keydown',e=>{if(e.key==='Enter')checkPwd()});
+
+renderGrids();
+</script>
+</body>
+</html>
