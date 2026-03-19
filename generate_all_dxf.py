@@ -108,6 +108,9 @@ def new_doc():
     doc.layers.add("CUTS", color=7)       # white — cut lines
     doc.layers.add("ENGRAVE", color=1)    # red — engrave/score
     doc.layers.add("GUIDE", color=3)      # green — reference only
+    # Set extents so Autodesk Viewer can render the file
+    doc.header['$EXTMIN'] = (-10, -200, 0)
+    doc.header['$EXTMAX'] = (500, 300, 0)
     return doc
 
 

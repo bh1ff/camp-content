@@ -352,7 +352,7 @@ def draw_part_dxf(msp, part, color):
     msp.add_text(
         label,
         height=font_size,
-        dxfattribs={"color": ACI_LABEL, "style": "OpenSans"},
+        dxfattribs={"color": ACI_LABEL},
     ).set_placement((x + w / 2, y + h / 2), align=TextEntityAlignment.MIDDLE_CENTER)
 
 
@@ -362,6 +362,16 @@ def create_dxf(project_key, title, sheets_data):
     for sheet_idx, sheet_parts in enumerate(sheets_data):
         doc = ezdxf.new("R2010")
         msp = doc.modelspace()
+
+        # Set proper extents so viewers can render the file
+        doc.header['$EXTMIN'] = (0, 0, 0)
+        doc.header['$EXTMAX'] = (SHEET_W, SHEET_H, 0)
+
+        # Register linetypes
+        if 'DASHED' not in doc.linetypes:
+            doc.linetypes.add("DASHED", pattern=[0.6, 0.5, -0.1])
+        if 'DASHDOT' not in doc.linetypes:
+            doc.linetypes.add("DASHDOT", pattern=[1.0, 0.5, -0.1, 0.0, -0.1])
 
         # Sheet boundary (dashed)
         msp.add_lwpolyline(

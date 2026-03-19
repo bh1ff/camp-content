@@ -489,7 +489,7 @@ $SKPOLY
   9
 $TDCREATE
  40
-2461119.6021064813
+2461119.632488426
   9
 $TDUCREATE
  40
@@ -497,7 +497,7 @@ $TDUCREATE
   9
 $TDUPDATE
  40
-2461119.6021064813
+2461119.632488426
   9
 $TDUUPDATE
  40
@@ -549,7 +549,7 @@ $SPLINESEGS
   9
 $HANDSEED
   5
-52
+54
   9
 $SURFTAB1
  70
@@ -929,11 +929,11 @@ $PSTYLEMODE
   9
 $FINGERPRINTGUID
   2
-{A5832B51-1342-44FB-8437-F18985F5EF10}
+{2765A9A6-28B3-4356-A881-FE7036E73503}
   9
 $VERSIONGUID
   2
-{167B2FF3-ACBE-43F5-A371-2FBFF0ED0CF5}
+{29842141-F2C9-4EE4-8385-A773B3FC74FE}
   9
 $EXTNAMES
 290
@@ -1323,9 +1323,9 @@ ISM
   0
 CLASS
   1
-LAYOUT
+ACDBPLACEHOLDER
   2
-AcDbLayout
+AcDbPlaceHolder
   3
 ObjectDBX Classes
  90
@@ -1339,9 +1339,9 @@ ObjectDBX Classes
   0
 CLASS
   1
-ACDBPLACEHOLDER
+LAYOUT
   2
-AcDbPlaceHolder
+AcDbLayout
   3
 ObjectDBX Classes
  90
@@ -1469,7 +1469,7 @@ LTYPE
 100
 AcDbSymbolTable
  70
-3
+5
   0
 LTYPE
   5
@@ -1536,6 +1536,74 @@ Continuous
 0
  40
 0.0
+  0
+LTYPE
+  5
+2F
+330
+2
+100
+AcDbSymbolTableRecord
+100
+AcDbLinetypeTableRecord
+  2
+DASHED
+ 70
+0
+  3
+
+ 72
+65
+ 73
+2
+ 40
+0.6
+ 49
+0.5
+ 74
+0
+ 49
+-0.1
+ 74
+0
+  0
+LTYPE
+  5
+30
+330
+2
+100
+AcDbSymbolTableRecord
+100
+AcDbLinetypeTableRecord
+  2
+DASHDOT
+ 70
+0
+  3
+
+ 72
+65
+ 73
+4
+ 40
+1.0
+ 49
+0.5
+ 74
+0
+ 49
+-0.1
+ 74
+0
+ 49
+0.0
+ 74
+0
+ 49
+-0.1
+ 74
+0
   0
 ENDTAB
   0
@@ -1701,7 +1769,7 @@ ACAD
   0
 APPID
   5
-4F
+51
 330
 3
 100
@@ -1715,7 +1783,7 @@ HATCHBACKGROUNDCOLOR
   0
 APPID
   5
-50
+52
 330
 3
 100
@@ -2025,7 +2093,7 @@ ENTITIES
   0
 LWPOLYLINE
   5
-2F
+31
 330
 17
 100
@@ -2065,7 +2133,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-30
+32
 330
 17
 100
@@ -2105,7 +2173,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-31
+33
 330
 17
 100
@@ -2143,7 +2211,7 @@ AcDbPolyline
   0
 TEXT
   5
-32
+34
 330
 17
 100
@@ -2164,88 +2232,10 @@ AcDbText
 7.199999999999999
   1
 Tower Frame #1
-  7
-OpenSans
  72
 1
  11
 25.0
- 21
-130.0
- 31
-0.0
-100
-AcDbText
- 73
-2
-  0
-LWPOLYLINE
-  5
-33
-330
-17
-100
-AcDbEntity
-  8
-0
- 62
-4
-100
-AcDbPolyline
- 90
-5
- 70
-0
- 10
-48.0
- 20
-5.0
- 10
-88.0
- 20
-5.0
- 10
-88.0
- 20
-255.0
- 10
-48.0
- 20
-255.0
- 10
-48.0
- 20
-5.0
-  0
-TEXT
-  5
-34
-330
-17
-100
-AcDbEntity
-  8
-0
- 62
-7
-100
-AcDbText
- 10
-68.0
- 20
-130.0
- 30
-0.0
- 40
-7.199999999999999
-  1
-Tower Frame #2
-  7
-OpenSans
- 72
-1
- 11
-68.0
  21
 130.0
  31
@@ -2273,6 +2263,80 @@ AcDbPolyline
  70
 0
  10
+48.0
+ 20
+5.0
+ 10
+88.0
+ 20
+5.0
+ 10
+88.0
+ 20
+255.0
+ 10
+48.0
+ 20
+255.0
+ 10
+48.0
+ 20
+5.0
+  0
+TEXT
+  5
+36
+330
+17
+100
+AcDbEntity
+  8
+0
+ 62
+7
+100
+AcDbText
+ 10
+68.0
+ 20
+130.0
+ 30
+0.0
+ 40
+7.199999999999999
+  1
+Tower Frame #2
+ 72
+1
+ 11
+68.0
+ 21
+130.0
+ 31
+0.0
+100
+AcDbText
+ 73
+2
+  0
+LWPOLYLINE
+  5
+37
+330
+17
+100
+AcDbEntity
+  8
+0
+ 62
+4
+100
+AcDbPolyline
+ 90
+5
+ 70
+0
+ 10
 91.0
  20
 5.0
@@ -2295,7 +2359,7 @@ AcDbPolyline
   0
 TEXT
   5
-36
+38
 330
 17
 100
@@ -2316,8 +2380,6 @@ AcDbText
 8.0
   1
 Base
-  7
-OpenSans
  72
 1
  11
@@ -2333,7 +2395,7 @@ AcDbText
   0
 LWPOLYLINE
   5
-37
+39
 330
 17
 100
@@ -2675,7 +2737,7 @@ AcDbPolyline
   0
 CIRCLE
   5
-38
+3A
 330
 17
 100
@@ -2697,7 +2759,7 @@ AcDbCircle
   0
 TEXT
   5
-39
+3B
 330
 17
 100
@@ -2718,8 +2780,6 @@ AcDbText
 8.0
   1
 Large Gear
-  7
-OpenSans
  72
 1
  11
@@ -2735,7 +2795,7 @@ AcDbText
   0
 CIRCLE
   5
-3A
+3C
 330
 17
 100
@@ -2757,7 +2817,7 @@ AcDbCircle
   0
 CIRCLE
   5
-3B
+3D
 330
 17
 100
@@ -2779,7 +2839,7 @@ AcDbCircle
   0
 TEXT
   5
-3C
+3E
 330
 17
 100
@@ -2800,8 +2860,6 @@ AcDbText
 8.0
   1
 Pulley
-  7
-OpenSans
  72
 1
  11
@@ -2817,7 +2875,7 @@ AcDbText
   0
 LWPOLYLINE
   5
-3D
+3F
 330
 17
 100
@@ -2855,7 +2913,7 @@ AcDbPolyline
   0
 TEXT
   5
-3E
+40
 330
 17
 100
@@ -2876,8 +2934,6 @@ AcDbText
 7.199999999999999
   1
 Hook Plate
-  7
-OpenSans
  72
 1
  11
@@ -2893,7 +2949,7 @@ AcDbText
   0
 CIRCLE
   5
-3F
+41
 330
 17
 100
@@ -2915,7 +2971,7 @@ AcDbCircle
   0
 CIRCLE
   5
-40
+42
 330
 17
 100
@@ -2937,7 +2993,7 @@ AcDbCircle
   0
 TEXT
   5
-41
+43
 330
 17
 100
@@ -2958,8 +3014,6 @@ AcDbText
 6.3
   1
 Winch Drum
-  7
-OpenSans
  72
 1
  11
@@ -2975,7 +3029,7 @@ AcDbText
   0
 LWPOLYLINE
   5
-42
+44
 330
 17
 100
@@ -3173,7 +3227,7 @@ AcDbPolyline
   0
 CIRCLE
   5
-43
+45
 330
 17
 100
@@ -3195,7 +3249,7 @@ AcDbCircle
   0
 TEXT
   5
-44
+46
 330
 17
 100
@@ -3216,90 +3270,12 @@ AcDbText
 5.04
   1
 Small Gear
-  7
-OpenSans
  72
 1
  11
 153.0
  21
 272.0
- 31
-0.0
-100
-AcDbText
- 73
-2
-  0
-LWPOLYLINE
-  5
-45
-330
-17
-100
-AcDbEntity
-  8
-0
- 62
-4
-100
-AcDbPolyline
- 90
-5
- 70
-0
- 10
-170.0
- 20
-258.0
- 10
-390.0
- 20
-258.0
- 10
-390.0
- 20
-283.0
- 10
-170.0
- 20
-283.0
- 10
-170.0
- 20
-258.0
-  0
-TEXT
-  5
-46
-330
-17
-100
-AcDbEntity
-  8
-0
- 62
-7
-100
-AcDbText
- 10
-280.0
- 20
-270.5
- 30
-0.0
- 40
-4.5
-  1
-Jib
-  7
-OpenSans
- 72
-1
- 11
-280.0
- 21
-270.5
  31
 0.0
 100
@@ -3325,25 +3301,25 @@ AcDbPolyline
  70
 0
  10
-5.0
+170.0
  20
-311.0
+258.0
  10
-35.0
+390.0
  20
-311.0
+258.0
  10
-35.0
+390.0
  20
-334.0
+283.0
  10
-5.0
+170.0
  20
-334.0
+283.0
  10
-5.0
+170.0
  20
-311.0
+258.0
   0
 TEXT
   5
@@ -3359,23 +3335,21 @@ AcDbEntity
 100
 AcDbText
  10
-20.0
+280.0
  20
-322.5
+270.5
  30
 0.0
  40
-4.14
+4.5
   1
-Cross Brace #1
-  7
-OpenSans
+Jib
  72
 1
  11
-20.0
+280.0
  21
-322.5
+270.5
  31
 0.0
 100
@@ -3401,23 +3375,23 @@ AcDbPolyline
  70
 0
  10
-38.0
+5.0
  20
 311.0
  10
-68.0
+35.0
  20
 311.0
  10
-68.0
+35.0
  20
 334.0
  10
-38.0
+5.0
  20
 334.0
  10
-38.0
+5.0
  20
 311.0
   0
@@ -3435,7 +3409,7 @@ AcDbEntity
 100
 AcDbText
  10
-53.0
+20.0
  20
 322.5
  30
@@ -3443,13 +3417,11 @@ AcDbText
  40
 4.14
   1
-Cross Brace #2
-  7
-OpenSans
+Cross Brace #1
  72
 1
  11
-53.0
+20.0
  21
 322.5
  31
@@ -3477,6 +3449,80 @@ AcDbPolyline
  70
 0
  10
+38.0
+ 20
+311.0
+ 10
+68.0
+ 20
+311.0
+ 10
+68.0
+ 20
+334.0
+ 10
+38.0
+ 20
+334.0
+ 10
+38.0
+ 20
+311.0
+  0
+TEXT
+  5
+4C
+330
+17
+100
+AcDbEntity
+  8
+0
+ 62
+7
+100
+AcDbText
+ 10
+53.0
+ 20
+322.5
+ 30
+0.0
+ 40
+4.14
+  1
+Cross Brace #2
+ 72
+1
+ 11
+53.0
+ 21
+322.5
+ 31
+0.0
+100
+AcDbText
+ 73
+2
+  0
+LWPOLYLINE
+  5
+4D
+330
+17
+100
+AcDbEntity
+  8
+0
+ 62
+4
+100
+AcDbPolyline
+ 90
+5
+ 70
+0
+ 10
 71.0
  20
 311.0
@@ -3499,7 +3545,7 @@ AcDbPolyline
   0
 TEXT
   5
-4C
+4E
 330
 17
 100
@@ -3520,8 +3566,6 @@ AcDbText
 3.0
   1
 Crank
-  7
-OpenSans
  72
 1
  11
@@ -3537,7 +3581,7 @@ AcDbText
   0
 TEXT
   5
-4D
+4F
 330
 17
 100
@@ -3573,7 +3617,7 @@ AcDbText
   0
 TEXT
   5
-4E
+50
 330
 17
 100
@@ -4597,7 +4641,7 @@ CREATED_BY_EZDXF
   3
 WRITTEN_BY_EZDXF
 350
-51
+53
   0
 DICTIONARYVAR
   5
@@ -4609,11 +4653,11 @@ DictionaryVariables
 280
 0
   1
-1.4.3 @ 2026-03-19T11:27:02.330772+00:00
+1.4.3 @ 2026-03-19T12:10:47.049244+00:00
   0
 DICTIONARYVAR
   5
-51
+53
 330
 2D
 100
@@ -4621,7 +4665,7 @@ DictionaryVariables
 280
 0
   1
-1.4.3 @ 2026-03-19T11:27:02.331732+00:00
+1.4.3 @ 2026-03-19T12:10:47.050401+00:00
   0
 ENDSEC
   0
