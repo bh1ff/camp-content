@@ -152,9 +152,7 @@ def m1_catapult():
         # Bottom tabs
         tab_down(msp, ox + sw / 2 - 15, s1y)
         tab_down(msp, ox + sw / 2 + 15, s1y)
-        # Fulcrum hole (M3 screw) — centred, 15mm from top
-        circ(msp, ox + sw / 2, s1y + sh - 15, M3_R)
-        # Arm pass-through slot at fulcrum height
+        # Arm pass-through slot at pivot height (arm rocks in slot)
         slot_v(msp, ox + sw / 2, s1y + sh - 15, SLOT_W, 22)
         lbl = "M1 SIDE L" if i == 0 else "M1 SIDE R"
         label(msp, ox + 5, s1y + sh - 8, lbl)
@@ -163,7 +161,10 @@ def m1_catapult():
     ax, ay = bx, by - 30 - GAP
     aw, ah = 280, 20
     rect(msp, ax, ay, aw, ah)
-    circ(msp, ax + 80, ay + ah / 2, M3_R)          # pivot hole
+    # Stopper holes — dowels prevent arm sliding out of side support slots
+    # Side supports sit at base x=40 and x=160; stoppers just outside each
+    circ(msp, ax + 35, ay + ah / 2, M3_R)           # stopper L
+    circ(msp, ax + 165, ay + ah / 2, M3_R)          # stopper R
     slot_v(msp, ax + aw - 15, ay + ah / 2, SLOT_W, TAB_W)  # cup slot
     label(msp, ax + 5, ay + ah - 7, "M1 ARM (BIRCH PLY)")
 
