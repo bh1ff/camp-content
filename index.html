@@ -628,7 +628,26 @@ function showLaserKits(){
 
   let grandHtml=GRAND_TOTAL.map(r=>`<tr><td>${r.i}</td><td class="hw-qty">${r.q}</td><td>${r.n}</td></tr>`).join('');
 
-  let cardsHtml=mechModules.map(p=>{
+  const COMBINED_SHEETS=[
+    {name:'Sheet1_M6_M4',label:'Sheet 1 — M6 Tower Crane + M4 Gear-Down Motor',fill:'94%'},
+    {name:'Sheet2_M1_M8',label:'Sheet 2 — M1 Catapult + M8 Robotic Gripper',fill:'71%'},
+    {name:'Sheet3_M2_M3',label:'Sheet 3 — M2 Pulley Lift + M3 Automata Card',fill:'85%'},
+    {name:'Sheet4_M5_M7',label:'Sheet 4 — M5 Hand-Crank Automata + M7 Rover',fill:'80%'},
+  ];
+
+  let combinedHtml=COMBINED_SHEETS.map(s=>`
+    <div class="laser-card">
+      <img src="sheets/${s.name}.png" alt="${s.label}" loading="lazy">
+      <div class="lc-info">
+        <div class="lc-title">${s.label}</div>
+        <div class="lc-sub">Fill: ${s.fill} &middot; All holes, slots &amp; tabs included</div>
+      </div>
+      <div class="lc-btns">
+        <a class="dl-btn" href="sheets/${s.name}.dxf" download>&#11015; Download DXF</a>
+      </div>
+    </div>`).join('');
+
+  let perProjectHtml=mechModules.map(p=>{
     const L=LASER[p.id];if(!L)return'';
     return `
       <div class="laser-card">
@@ -660,8 +679,11 @@ function showLaserKits(){
           </table>
         </div>
       </div>
-      <h3 style="font-weight:800;color:var(--text-dark);margin-bottom:14px;font-size:1.05rem">Sheet Nesting Layouts (400 × 600mm MDF)</h3>
-      <div class="laser-grid">${cardsHtml}</div>
+      <h3 style="font-weight:800;color:var(--text-dark);margin-bottom:14px;font-size:1.05rem">Bulk Cut Sheets — 4 sheets for all 8 projects (400 × 600mm MDF)</h3>
+      <p style="font-size:.85rem;color:#5a6a6d;margin-bottom:14px">All parts with full detail (holes, slots, tabs). Two projects per sheet to maximize material usage.</p>
+      <div class="laser-grid">${combinedHtml}</div>
+      <h3 style="font-weight:800;color:var(--text-dark);margin:28px 0 14px;font-size:1.05rem">Individual Project Sheets</h3>
+      <div class="laser-grid">${perProjectHtml}</div>
     </div>`;
 
   el.classList.add('active');
