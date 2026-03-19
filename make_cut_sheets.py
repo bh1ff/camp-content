@@ -1,16 +1,9 @@
 #!/usr/bin/env python3
 """
-make_cut_sheets.py
-Packs all 8 project DXFs (with full detail: holes, slots, tabs) onto
-the minimum number of 400×600mm MDF sheets for bulk laser cutting.
-
-Projects are grouped to maximize sheet usage:
-  Sheet 1: M6 Tower Crane (315×377) + M4 Gear-Down Motor (276×176)
-  Sheet 2: M1 Catapult (348×249) + M8 Robotic Gripper (228×166)
-  Sheet 3: M2 Pulley Lift (296×276) + M3 Automata Card (276×221)
-  Sheet 4: M5 Hand-Crank Automata (276×264) + M7 Rover (308×203)
-
-4 sheets instead of 8 = 50% material saving.
+make_cut_sheets.py — Mass Production Sheets
+Packs maximum duplicate copies of each project onto 400×600mm MDF sheets.
+Tries both orientations (normal + 90° rotated) to maximize kits per sheet.
+All internal features (holes, slots, tabs, gear teeth) are preserved.
 """
 
 import ezdxf
@@ -25,45 +18,18 @@ from ezdxf.addons.drawing.matplotlib import MatplotlibBackend
 SHEET_W = 400
 SHEET_H = 600
 MARGIN = 5
+GAP = 5  # gap between copies
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 INPUT_DIR = os.path.join(BASE_DIR, "dxf_output")
 OUTPUT_DIR = os.path.join(BASE_DIR, "sheets")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# Sheet groupings: [(project_name, stack_position), ...]
-# Projects are stacked vertically on each sheet with a gap between them
-SHEETS = [
-    {
-        "name": "Sheet1_M6_M4",
-        "label": "Sheet 1 — M6 Tower Crane + M4 Gear-Down Motor",
-        "projects": ["M4_Gear_Down_Motor", "M6_Tower_Crane"],  # bottom to top
-    },
-    {
-        "name": "Sheet2_M1_M8",
-        "label": "Sheet 2 — M1 Catapult + M8 Robotic Gripper",
-        "projects": ["M8_Robotic_Gripper", "M1_Catapult"],
-    },
-    {
-        "name": "Sheet3_M2_M3",
-        "label": "Sheet 3 — M2 Pulley Lift + M3 Automata Card",
-        "projects": ["M3_Automata_Card", "M2_Pulley_Lift"],
-    },
-    {
-        "name": "Sheet4_M5_M7",
-        "label": "Sheet 4 — M5 Hand-Crank Automata + M7 Rover",
-        "projects": ["M7_Rover_Ramp", "M5_Hand_Crank_Automata"],
-    },
-]
-
-GAP = 8  # gap between projects on same sheet
-
 
 def get_bounds(msp):
     """Calculate bounding box of all entities in modelspace."""
     min_x = min_y = float('inf')
     max_x = max_y = float('-inf')
-
     for e in msp:
         try:
             etype = e.dxftype()
@@ -85,12 +51,24 @@ def get_bounds(msp):
                 max_x, max_y = max(max_x, p.x), max(max_y, p.y)
         except Exception:
             pass
-
     return min_x, min_y, max_x, max_y
 
 
-def copy_entities(src_msp, dst_msp, dx, dy):
-    """Copy all entities from src to dst with (dx, dy) translation."""
+def calc_grid(w, h):
+    """How many copies fit in a grid on the usable sheet area."""
+    uw = SHEET_W - 2 * MARGIN
+    uh = SHEET_H - 2 * MARGIN
+    cols = 1
+    while (cols + 1) * w + cols * GAP <= uw:
+        cols += 1
+    rows = 1
+    while (rows + 1) * h + rows * GAP <= uh:
+        rows += 1
+    return cols, rows, cols * rows
+
+
+def copy_entities(src_msp, dst_msp, dx, dy, rotate=False, rot_cx=0, rot_cy=0):
+    """Copy entities with translation. If rotate=True, rotate 90° CCW first."""
     count = 0
     for e in src_msp:
         try:
@@ -101,98 +79,119 @@ def copy_entities(src_msp, dst_msp, dx, dy):
             if e.dxf.hasattr('color'):
                 attribs['color'] = e.dxf.color
 
+            def tx(x, y):
+                if rotate:
+                    # Rotate 90° CCW around (rot_cx, rot_cy), then translate
+                    rx, ry = -(y - rot_cy), (x - rot_cx)
+                    return (rx + dx, ry + dy)
+                return (x + dx, y + dy)
+
             if etype == 'LWPOLYLINE':
-                pts = [(p[0] + dx, p[1] + dy) for p in e.get_points(format='xy')]
+                pts = [tx(p[0], p[1]) for p in e.get_points(format='xy')]
                 dst_msp.add_lwpolyline(pts, close=e.close, dxfattribs=attribs)
                 count += 1
             elif etype == 'CIRCLE':
-                dst_msp.add_circle(
-                    (e.dxf.center.x + dx, e.dxf.center.y + dy),
-                    e.dxf.radius, dxfattribs=attribs)
+                nc = tx(e.dxf.center.x, e.dxf.center.y)
+                dst_msp.add_circle(nc, e.dxf.radius, dxfattribs=attribs)
                 count += 1
             elif etype == 'LINE':
-                dst_msp.add_line(
-                    (e.dxf.start.x + dx, e.dxf.start.y + dy),
-                    (e.dxf.end.x + dx, e.dxf.end.y + dy),
-                    dxfattribs=attribs)
+                ns = tx(e.dxf.start.x, e.dxf.start.y)
+                ne = tx(e.dxf.end.x, e.dxf.end.y)
+                dst_msp.add_line(ns, ne, dxfattribs=attribs)
                 count += 1
             elif etype == 'TEXT':
                 if e.dxf.hasattr('height'):
                     attribs['height'] = e.dxf.height
+                np = tx(e.dxf.insert.x, e.dxf.insert.y)
                 t = dst_msp.add_text(e.dxf.text, dxfattribs=attribs)
-                t.set_placement((e.dxf.insert.x + dx, e.dxf.insert.y + dy))
+                t.set_placement(np)
                 count += 1
         except Exception:
             pass
     return count
 
 
-def make_combined_sheet(sheet_def):
-    """Create a combined sheet DXF with multiple projects."""
-    doc = ezdxf.new("R2010")
+def make_mass_sheet(src_path, proj_name):
+    """Create a mass production sheet with maximum copies of one project."""
+    src = ezdxf.readfile(src_path)
+    src_msp = src.modelspace()
+    min_x, min_y, max_x, max_y = get_bounds(src_msp)
+    w = max_x - min_x
+    h = max_y - min_y
 
-    # Add standard layers
+    # Try normal orientation
+    cols_n, rows_n, count_n = calc_grid(w, h)
+    # Try rotated 90° (swap w and h)
+    cols_r, rows_r, count_r = calc_grid(h, w)
+
+    use_rotate = count_r > count_n
+    if use_rotate:
+        cols, rows, count = cols_r, rows_r, count_r
+        cell_w, cell_h = h, w  # after rotation, width=old_height, height=old_width
+    else:
+        cols, rows, count = cols_n, rows_n, count_n
+        cell_w, cell_h = w, h
+
+    print(f"  {proj_name}: {w:.0f}×{h:.0f}mm → {cols}×{rows} grid = {count} copies/sheet"
+          f"{'  (rotated 90°)' if use_rotate else ''}")
+
+    # Create target document
+    doc = ezdxf.new("R2010")
     doc.layers.add("CUTS", color=7)
     doc.layers.add("ENGRAVE", color=1)
     doc.layers.add("GUIDE", color=3)
     doc.layers.add("SHEET", color=8)
-
     msp = doc.modelspace()
 
-    # Add sheet boundary
+    # Sheet boundary
     msp.add_lwpolyline(
         [(0, 0), (SHEET_W, 0), (SHEET_W, SHEET_H), (0, SHEET_H)],
         close=True, dxfattribs={"layer": "SHEET", "color": 8})
 
-    cursor_y = MARGIN  # current Y position for stacking
+    # Calculate starting offset to center the grid
+    grid_w = cols * cell_w + (cols - 1) * GAP
+    grid_h = rows * cell_h + (rows - 1) * GAP
+    start_x = MARGIN + (SHEET_W - 2 * MARGIN - grid_w) / 2
+    start_y = MARGIN + (SHEET_H - 2 * MARGIN - grid_h) / 2
+
     total_entities = 0
+    for row in range(rows):
+        for col in range(cols):
+            # Position for this copy
+            cx = start_x + col * (cell_w + GAP)
+            cy = start_y + row * (cell_h + GAP)
 
-    for proj_name in sheet_def["projects"]:
-        src_path = os.path.join(INPUT_DIR, f"{proj_name}.dxf")
-        if not os.path.exists(src_path):
-            print(f"  WARNING: {src_path} not found, skipping")
-            continue
+            if use_rotate:
+                # Rotate 90° CCW: the source min corner maps to a new position
+                # After rotation around (min_x + w/2, min_y + h/2) then translate
+                # Simpler: normalize source to origin, rotate, then place
+                # Rotation 90° CCW of point (x-min_x, y-min_y) → (-(y-min_y), (x-min_x))
+                # This maps (0,0)→(0,0), (w,0)→(0,w), (0,h)→(-h,0), (w,h)→(-h,w)
+                # Bounding box after: (-h,0) to (0,w) → shift by +h: (0,0) to (h,w)
+                # So cell_w = h, cell_h = w (confirmed)
+                dx = cx + h  # shift to put left edge at cx (after rotation, min_x = -h + origin)
+                dy = cy
+                n = copy_entities(src_msp, msp, dx, dy,
+                                  rotate=True, rot_cx=min_x, rot_cy=min_y)
+            else:
+                dx = cx - min_x
+                dy = cy - min_y
+                n = copy_entities(src_msp, msp, dx, dy)
 
-        src = ezdxf.readfile(src_path)
-        src_msp = src.modelspace()
-        min_x, min_y, max_x, max_y = get_bounds(src_msp)
-        w, h = max_x - min_x, max_y - min_y
+            total_entities += n
 
-        # Translation: align left edge to MARGIN, stack at cursor_y
-        dx = MARGIN - min_x
-        dy = cursor_y - min_y
-
-        # Center horizontally if narrower than sheet
-        extra_x = SHEET_W - 2 * MARGIN - w
-        if extra_x > 0:
-            dx += extra_x / 2
-
-        n = copy_entities(src_msp, msp, dx, dy)
-        total_entities += n
-        print(f"    {proj_name}: {w:.0f}×{h:.0f}mm, {n} entities, Y={cursor_y:.0f}–{cursor_y+h:.0f}")
-
-        cursor_y += h + GAP
-
-    # Set extents
     doc.header['$EXTMIN'] = (0, 0, 0)
     doc.header['$EXTMAX'] = (SHEET_W, SHEET_H, 0)
 
-    # Save DXF
-    dxf_path = os.path.join(OUTPUT_DIR, f"{sheet_def['name']}.dxf")
+    dxf_path = os.path.join(OUTPUT_DIR, f"{proj_name}_x{count}.dxf")
     doc.saveas(dxf_path)
-
-    # Verify fit
-    used_h = cursor_y - GAP
-    fill_pct = (used_h / SHEET_H) * 100
-    fits = "OK" if used_h <= SHEET_H else "OVERFLOW!"
-    print(f"    Total height: {used_h:.0f}/{SHEET_H}mm ({fill_pct:.0f}%) — {fits}")
     print(f"    DXF: {dxf_path} ({total_entities} entities)")
 
-    return dxf_path
+    return dxf_path, count, cols, rows, use_rotate
 
 
 def make_png(dxf_path, png_path, title):
-    """Render a sheet DXF to PNG."""
+    """Render sheet DXF to PNG."""
     doc = ezdxf.readfile(dxf_path)
     msp = doc.modelspace()
 
@@ -204,8 +203,6 @@ def make_png(dxf_path, png_path, title):
     out = MatplotlibBackend(ax)
     Frontend(ctx, out).draw_layout(msp)
 
-    ax.set_xlim(-10, SHEET_W + 10)
-    ax.set_ylim(-10, SHEET_H + 10)
     ax.set_aspect('equal')
     ax.axis('off')
     ax.set_title(title, color='white', fontsize=10, fontweight='bold', pad=10)
@@ -219,68 +216,65 @@ def make_png(dxf_path, png_path, title):
 
 def main():
     print("=" * 60)
-    print("Combined Laser Cut Sheets — All 8 Projects on 4 Sheets")
+    print("Mass Production Cut Sheets")
+    print("Maximum duplicate kits per 400×600mm MDF sheet")
     print("=" * 60)
-    print(f"Sheet: {SHEET_W} × {SHEET_H}mm, {MARGIN}mm margin, {GAP}mm gap")
-    print(f"Output: {OUTPUT_DIR}")
+    print(f"Sheet: {SHEET_W}×{SHEET_H}mm, {MARGIN}mm margin, {GAP}mm gap")
     print()
 
-    sheet_files = []
-    for i, sheet_def in enumerate(SHEETS):
-        print(f"\n{sheet_def['label']}")
-        print("-" * 50)
-
-        dxf_path = make_combined_sheet(sheet_def)
-        png_path = dxf_path.replace('.dxf', '.png')
-        make_png(dxf_path, png_path, sheet_def['label'])
-        sheet_files.append((dxf_path, png_path))
-
-    # Also generate individual project sheets (for per-project downloads)
-    print("\n\nIndividual project sheets (for per-project use):")
-    print("-" * 50)
+    results = []
     for src_name in sorted(os.listdir(INPUT_DIR)):
         if not src_name.endswith('.dxf'):
             continue
         proj = src_name.replace('.dxf', '')
         src_path = os.path.join(INPUT_DIR, src_name)
 
+        dxf_path, count, cols, rows, rotated = make_mass_sheet(src_path, proj)
+        png_path = dxf_path.replace('.dxf', '.png')
+        title = f"{proj.replace('_', ' ')} — {count} kits per sheet ({cols}×{rows})"
+        make_png(dxf_path, png_path, title)
+        results.append((proj, count, cols, rows, rotated))
+
+    # Also keep individual single-copy sheets for per-project use
+    print("\nSingle-copy project sheets:")
+    print("-" * 50)
+    for src_name in sorted(os.listdir(INPUT_DIR)):
+        if not src_name.endswith('.dxf'):
+            continue
+        proj = src_name.replace('.dxf', '')
+        src_path = os.path.join(INPUT_DIR, src_name)
         src = ezdxf.readfile(src_path)
         src_msp = src.modelspace()
         min_x, min_y, max_x, max_y = get_bounds(src_msp)
         w, h = max_x - min_x, max_y - min_y
 
-        # Create sheet doc
         doc = ezdxf.new("R2010")
         doc.layers.add("CUTS", color=7)
         doc.layers.add("ENGRAVE", color=1)
         doc.layers.add("GUIDE", color=3)
         doc.layers.add("SHEET", color=8)
         msp = doc.modelspace()
-
-        # Sheet boundary
         msp.add_lwpolyline(
             [(0, 0), (SHEET_W, 0), (SHEET_W, SHEET_H), (0, SHEET_H)],
             close=True, dxfattribs={"layer": "SHEET", "color": 8})
-
-        # Translate to center on sheet
-        dx = MARGIN - min_x + max(0, (SHEET_W - 2*MARGIN - w) / 2)
-        dy = MARGIN - min_y + max(0, (SHEET_H - 2*MARGIN - h) / 2)
-        n = copy_entities(src_msp, msp, dx, dy)
-
+        dx = MARGIN - min_x + max(0, (SHEET_W - 2 * MARGIN - w) / 2)
+        dy = MARGIN - min_y + max(0, (SHEET_H - 2 * MARGIN - h) / 2)
+        copy_entities(src_msp, msp, dx, dy)
         doc.header['$EXTMIN'] = (0, 0, 0)
         doc.header['$EXTMAX'] = (SHEET_W, SHEET_H, 0)
-
         dxf_out = os.path.join(OUTPUT_DIR, f"{proj}_sheet1.dxf")
         doc.saveas(dxf_out)
-
-        png_out = os.path.join(OUTPUT_DIR, f"{proj}_sheet1.png")
-        make_png(dxf_out, png_out, f"{proj.replace('_', ' ')} — Cut Sheet")
-
-        print(f"  {proj}: {w:.0f}×{h:.0f}mm → {dxf_out}")
+        png_out = dxf_out.replace('.dxf', '.png')
+        make_png(dxf_out, png_out, f"{proj.replace('_', ' ')}")
+        print(f"  {proj} → {dxf_out}")
 
     print("\n" + "=" * 60)
-    print("Done! 4 combined sheets + 8 individual sheets generated.")
-    print(f"Files in: {OUTPUT_DIR}")
+    print("SUMMARY — Kits per sheet:")
+    print("-" * 40)
+    for proj, count, cols, rows, rotated in results:
+        r = " (rotated)" if rotated else ""
+        print(f"  {proj:35s}  {count} kits  ({cols}×{rows}){r}")
+    print("=" * 60)
 
 
 if __name__ == "__main__":
