@@ -167,10 +167,10 @@ def m1_catapult():
     slot_v(msp, ax + aw - 15, ay + ah / 2, SLOT_W, TAB_W)  # cup slot
     label(msp, ax + 5, ay + ah - 7, "M1 ARM (BIRCH PLY)")
 
-    # ---- ROW 2 contd: Stop piece ----
+    # ---- ROW 2 contd: Stop piece (below side supports, not overlapping) ----
     stw, sth = 60, 50
     stx = ax + aw + GAP
-    sty = ay
+    sty = by - GAP - sth  # place below base bottom to avoid side support overlap
     rect(msp, stx, sty, stw, sth)
     tab_down(msp, stx + stw / 2, sty)
     label(msp, stx + 5, sty + sth - 8, "M1 STOP")
@@ -232,8 +232,8 @@ def m2_pulley_lift():
         lbl = "M2 UP L" if i == 0 else "M2 UP R"
         label(msp, ox + 3, by + uh - 10, lbl)
 
-    # ---- ROW 2: Top beam, pulley wheel, winch drum ----
-    row2y = by - GAP - 40
+    # ---- ROW 2: Top beam, pulley, drum, hook (all in one row) ----
+    row2y = by - GAP - 50  # pulley r=25 centred at row2y+25; top = row2y+50 ≤ by-GAP
 
     # Top Beam — 126 × 30
     tbw, tbh = 126, 30
@@ -246,8 +246,17 @@ def m2_pulley_lift():
     circ(msp, tbx + tbw / 2 + 15, tby + tbh / 2, 2)   # string hole
     label(msp, tbx + 5, tby + tbh - 8, "M2 TOP BEAM")
 
+    # Hook plate — 50 × 50 (next to top beam)
+    lpx = tbx + tbw + GAP
+    lpy = row2y
+    rect(msp, lpx, lpy, 50, 50)
+    circ(msp, lpx + 25, lpy + 45, 2)
+    circ(msp, lpx + 15, lpy + 15, M3_R)
+    circ(msp, lpx + 35, lpy + 15, M3_R)
+    label(msp, lpx + 5, lpy + 30, "M2 HOOK")
+
     # Pulley Wheel — Ø50
-    px = tbx + tbw + GAP + 25
+    px = lpx + 50 + GAP + 25
     py = tby + 25
     circ(msp, px, py, 25)
     circ(msp, px, py, M3_R)
@@ -262,24 +271,14 @@ def m2_pulley_lift():
     slot_h(msp, wx + 12, wy, 6, SLOT_W)
     label(msp, wx - 12, wy - 2, "M2 DRUM")
 
-    # ---- ROW 3: Crank handle + Hook plate ----
-    row3y = row2y - GAP - 20
-
+    # ---- ROW 3: Crank handle ----
     # Crank — 80 × 15
-    hx, hy = bx, row3y
+    hx = bx
+    hy = row2y - GAP - 15
     rect(msp, hx, hy, 80, 15)
     circ(msp, hx + 10, hy + 7.5, M3_R)
     circ(msp, hx + 70, hy + 7.5, 3)
     label(msp, hx + 20, hy + 2, "M2 CRANK")
-
-    # Hook plate — 50 × 50
-    lpx = hx + 80 + GAP
-    lpy = row3y
-    rect(msp, lpx, lpy, 50, 50)
-    circ(msp, lpx + 25, lpy + 45, 2)
-    circ(msp, lpx + 15, lpy + 15, M3_R)
-    circ(msp, lpx + 35, lpy + 15, M3_R)
-    label(msp, lpx + 5, lpy + 30, "M2 HOOK")
 
     save(doc, "M2_Pulley_Lift.dxf")
 
@@ -346,17 +345,19 @@ def m3_automata_card():
     label(msp, scx - 12, scy - 2, "M3 SNAIL")
 
     # ---- ROW 3: Follower + Handle ----
-    row3y = row2y - 30 - GAP
+    row2_bottom = row2y - 25  # egg/snail cam max radius
+    row3y = row2_bottom - GAP  # start of row 3 items (placed downward from here)
 
-    # Follower — 15 × 80
-    rect(msp, bx, row3y, 15, 80)
-    circ(msp, bx + 7.5, row3y + 75, 1.5)
-    label(msp, bx + 1, row3y + 35, "FOL", height=2)
+    # Follower — 80 × 15 (laid horizontal)
+    fly = row3y - 15
+    rect(msp, bx, fly, 80, 15)
+    circ(msp, bx + 75, fly + 7.5, 1.5)
+    label(msp, bx + 25, fly + 3, "FOL", height=2)
 
     # Handle — 60 × 12
-    rect(msp, bx + 15 + GAP, row3y, 60, 12)
-    circ(msp, bx + 15 + GAP + 8, row3y + 6, M3_R)
-    label(msp, bx + 15 + GAP + 18, row3y + 2, "M3 HANDLE", height=2)
+    rect(msp, bx + 80 + GAP, fly, 60, 12)
+    circ(msp, bx + 80 + GAP + 8, fly + 6, M3_R)
+    label(msp, bx + 80 + GAP + 18, fly + 2, "M3 HANDLE", height=2)
 
     save(doc, "M3_Automata_Card.dxf")
 
