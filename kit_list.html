@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Robocode Spring Camp 2026 — Complete Kit List</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d1117; color: #e6edf3; padding: 30px; line-height: 1.6; }
+  h1 { text-align: center; color: #58a6ff; margin-bottom: 5px; font-size: 28px; }
+  .subtitle { text-align: center; color: #8b949e; margin-bottom: 30px; }
+  .summary-box { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; margin: 0 auto 30px; max-width: 900px; }
+  .summary-box h2 { color: #58a6ff; margin-bottom: 10px; font-size: 18px; }
+  .summary-box table { width: 100%; border-collapse: collapse; }
+  .summary-box th { text-align: left; color: #8b949e; padding: 6px 8px; border-bottom: 1px solid #30363d; font-weight: 500; }
+  .summary-box td { padding: 6px 8px; border-bottom: 1px solid #21262d; }
+  .summary-box td.qty { text-align: center; font-weight: bold; color: #f0883e; }
+  .project { background: #161b22; border: 1px solid #30363d; border-radius: 8px; margin: 0 auto 24px; max-width: 900px; overflow: hidden; }
+  .project-header { background: #21262d; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; }
+  .project-header h2 { color: #58a6ff; font-size: 18px; }
+  .project-header .diff { font-size: 12px; padding: 3px 10px; border-radius: 12px; font-weight: 600; }
+  .diff-low { background: #238636; color: #fff; }
+  .diff-med { background: #d29922; color: #000; }
+  .diff-high { background: #da3633; color: #fff; }
+  .section { padding: 16px 20px; }
+  .section h3 { color: #f0883e; font-size: 14px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+  th { text-align: left; color: #8b949e; padding: 6px 0; border-bottom: 1px solid #30363d; font-weight: 500; font-size: 13px; }
+  td { padding: 6px 0; border-bottom: 1px solid #21262d; font-size: 14px; }
+  td.mat { color: #7ee787; }
+  td.dim { color: #d2a8ff; font-family: monospace; }
+  td.qty { text-align: center; font-weight: bold; }
+  .note { color: #8b949e; font-size: 13px; font-style: italic; margin-top: 4px; }
+  .divider { border: none; border-top: 1px solid #30363d; margin: 8px 0; }
+  .totals { background: #1c2128; }
+  .totals td { font-weight: bold; color: #f0883e; }
+  footer { text-align: center; color: #484f58; margin-top: 40px; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<h1>Robocode Spring Camp 2026</h1>
+<p class="subtitle">Complete Kit List — 8 Mechanical Engineering Projects</p>
+
+<!-- ====== GLOBAL SHOPPING LIST ====== -->
+<div class="summary-box">
+  <h2>Hardware Shopping List (per student kit, all 8 projects)</h2>
+  <table>
+    <tr><th>Item</th><th>Spec</th><th style="text-align:center">Qty</th><th>Notes</th></tr>
+    <tr><td>M3 × 20mm pan head screw</td><td>M3 steel/stainless</td><td class="qty">30</td><td>Pivots, axles, assembly</td></tr>
+    <tr><td>M3 × 30mm pan head screw</td><td>M3 steel/stainless</td><td class="qty">10</td><td>Through thicker assemblies</td></tr>
+    <tr><td>M3 nut</td><td>M3 hex nut</td><td class="qty">40</td><td>Pair with screws</td></tr>
+    <tr><td>M3 washer</td><td>M3 flat washer</td><td class="qty">40</td><td>Between moving parts</td></tr>
+    <tr><td>TT Motor</td><td>3–6V DC gearmotor, D-shaft Ø5.5mm</td><td class="qty">2</td><td>M4 + M7</td></tr>
+    <tr><td>AA Battery holder</td><td>2×AA with switch + leads</td><td class="qty">2</td><td>M4 + M7</td></tr>
+    <tr><td>AA Batteries</td><td>1.5V AA</td><td class="qty">4</td><td>2 per holder</td></tr>
+    <tr><td>String / twine</td><td>~2mm cotton or nylon, 3m roll</td><td class="qty">1</td><td>M2, M4, M6</td></tr>
+    <tr><td>Rubber bands</td><td>Standard #64 (89mm)</td><td class="qty">8</td><td>M7 wheel grip, M8 return</td></tr>
+    <tr><td>3mm MDF sheet</td><td>400 × 600mm, Trustleaf/Medite</td><td class="qty">3</td><td>All projects except arm</td></tr>
+    <tr><td>3mm Birch plywood</td><td>~300 × 25mm strip</td><td class="qty">1</td><td>M1 catapult arm only</td></tr>
+    <tr><td>Wood glue (PVA)</td><td>Small bottle per table</td><td class="qty">shared</td><td>Permanent joints</td></tr>
+    <tr><td>Foam/rubber pads</td><td>~30 × 15mm, 2mm thick</td><td class="qty">2</td><td>M8 gripper jaw pads</td></tr>
+  </table>
+</div>
+
+<!-- ====== M1 CATAPULT ====== -->
+<div class="project">
+  <div class="project-header">
+    <h2>M1 — Catapult (Levers)</h2>
+    <span class="diff diff-low">Low</span>
+  </div>
+  <div class="section">
+    <h3>Laser-Cut Parts (3mm MDF unless noted)</h3>
+    <table>
+      <tr><th>Part</th><th>Dimensions</th><th>Material</th><th style="text-align:center">Qty</th></tr>
+      <tr><td>Base plate</td><td class="dim">200 × 120mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Side support</td><td class="dim">60 × 80mm</td><td class="mat">3mm MDF</td><td class="qty">2</td></tr>
+      <tr><td>Throwing arm</td><td class="dim">280 × 20mm (pivot at 80mm)</td><td class="mat">3mm Birch ply</td><td class="qty">1</td></tr>
+      <tr><td>Stop piece</td><td class="dim">60 × 50mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Cup / cradle (cross shape)</td><td class="dim">80 × 80mm (40mm base + 20mm flaps)</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+    </table>
+    <h3>Hardware</h3>
+    <table>
+      <tr><th>Item</th><th>Spec</th><th style="text-align:center">Qty</th><th>Purpose</th></tr>
+      <tr><td>M3 × 30mm screw</td><td class="dim">M3 pan head</td><td class="qty">1</td><td>Fulcrum pivot pin (through both supports + arm)</td></tr>
+      <tr><td>M3 nut</td><td class="dim">M3 hex</td><td class="qty">1</td><td>Lock fulcrum screw</td></tr>
+      <tr><td>M3 washer</td><td class="dim">M3 flat</td><td class="qty">4</td><td>Between arm and supports (2 each side)</td></tr>
+    </table>
+    <p class="note">Soft projectiles: marshmallows or scrunched paper (not included). Birch ply arm resists repeated flex.</p>
+  </div>
+</div>
+
+<!-- ====== M2 PULLEY LIFT ====== -->
+<div class="project">
+  <div class="project-header">
+    <h2>M2 — Pulley Lift (Pulleys)</h2>
+    <span class="diff diff-low">Low</span>
+  </div>
+  <div class="section">
+    <h3>Laser-Cut Parts</h3>
+    <table>
+      <tr><th>Part</th><th>Dimensions</th><th>Material</th><th style="text-align:center">Qty</th></tr>
+      <tr><td>Base</td><td class="dim">180 × 120mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Upright</td><td class="dim">50 × 200mm</td><td class="mat">3mm MDF</td><td class="qty">2</td></tr>
+      <tr><td>Top beam</td><td class="dim">126 × 30mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Pulley wheel</td><td class="dim">Ø50mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Winch drum</td><td class="dim">Ø40mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Crank handle</td><td class="dim">80 × 15mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Hook / load plate</td><td class="dim">50 × 50mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+    </table>
+    <h3>Hardware</h3>
+    <table>
+      <tr><th>Item</th><th>Spec</th><th style="text-align:center">Qty</th><th>Purpose</th></tr>
+      <tr><td>M3 × 20mm screw</td><td class="dim">M3 pan head</td><td class="qty">3</td><td>Pulley axle, drum axle, crank pivot</td></tr>
+      <tr><td>M3 nut</td><td class="dim">M3 hex</td><td class="qty">3</td><td>Lock axle screws</td></tr>
+      <tr><td>M3 washer</td><td class="dim">M3 flat</td><td class="qty">4</td><td>Between wheel/drum and supports</td></tr>
+      <tr><td>String</td><td class="dim">~600mm length, 2mm</td><td class="qty">1</td><td>Lifting line: hook → pulley → drum</td></tr>
+      <tr><td>Coins / washers</td><td class="dim">Any</td><td class="qty">10+</td><td>Test weights (shared)</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ====== M3 AUTOMATA CARD ====== -->
+<div class="project">
+  <div class="project-header">
+    <h2>M3 — Automata Card (Cams)</h2>
+    <span class="diff diff-low">Low</span>
+  </div>
+  <div class="section">
+    <h3>Laser-Cut Parts</h3>
+    <table>
+      <tr><th>Part</th><th>Dimensions</th><th>Material</th><th style="text-align:center">Qty</th></tr>
+      <tr><td>Base</td><td class="dim">100 × 80mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Side frame</td><td class="dim">80 × 120mm</td><td class="mat">3mm MDF</td><td class="qty">2</td></tr>
+      <tr><td>Egg cam</td><td class="dim">~50 × 36mm (egg shape)</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Round cam (eccentric)</td><td class="dim">Ø40mm (off-centre hole)</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Snail cam</td><td class="dim">~50mm diameter (spiral)</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Follower</td><td class="dim">15 × 80mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Handle</td><td class="dim">60 × 12mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+    </table>
+    <h3>Hardware</h3>
+    <table>
+      <tr><th>Item</th><th>Spec</th><th style="text-align:center">Qty</th><th>Purpose</th></tr>
+      <tr><td>M3 × 30mm screw</td><td class="dim">M3 pan head</td><td class="qty">1</td><td>Main axle (through frames + cam)</td></tr>
+      <tr><td>M3 × 20mm screw</td><td class="dim">M3 pan head</td><td class="qty">1</td><td>Handle attachment</td></tr>
+      <tr><td>M3 nut</td><td class="dim">M3 hex</td><td class="qty">2</td><td>Lock axle + handle</td></tr>
+      <tr><td>M3 washer</td><td class="dim">M3 flat</td><td class="qty">4</td><td>Between cam and frames</td></tr>
+    </table>
+    <p class="note">3 cam shapes included — students swap between egg, round, and snail to explore different motion patterns. Provide card, markers, and googly eyes for decorating the character on top of the follower.</p>
+  </div>
+</div>
+
+<!-- ====== M4 GEAR-DOWN MOTOR ====== -->
+<div class="project">
+  <div class="project-header">
+    <h2>M4 — Gear-Down Motor (Gears)</h2>
+    <span class="diff diff-med">Medium</span>
+  </div>
+  <div class="section">
+    <h3>Laser-Cut Parts</h3>
+    <table>
+      <tr><th>Part</th><th>Dimensions</th><th>Material</th><th style="text-align:center">Qty</th></tr>
+      <tr><td>Base</td><td class="dim">160 × 100mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Axle support</td><td class="dim">50 × 70mm</td><td class="mat">3mm MDF</td><td class="qty">2</td></tr>
+      <tr><td>TT Motor mount</td><td class="dim">80 × 40mm (24×20mm cutout)</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Small gear (12T)</td><td class="dim">Ø28mm, module 2, bore Ø5.8mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Large gear (36T)</td><td class="dim">Ø76mm, module 2, bore Ø3.2mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Output drum</td><td class="dim">Ø40mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+    </table>
+    <h3>Hardware &amp; Electronics</h3>
+    <table>
+      <tr><th>Item</th><th>Spec</th><th style="text-align:center">Qty</th><th>Purpose</th></tr>
+      <tr><td>TT Motor</td><td class="dim">3–6V DC gearmotor, D-shaft Ø5.5mm</td><td class="qty">1</td><td>Drive motor</td></tr>
+      <tr><td>2×AA Battery holder</td><td class="dim">With switch + leads</td><td class="qty">1</td><td>Power supply (3V)</td></tr>
+      <tr><td>AA Batteries</td><td class="dim">1.5V</td><td class="qty">2</td><td></td></tr>
+      <tr><td>M3 × 20mm screw</td><td class="dim">M3 pan head</td><td class="qty">4</td><td>Motor mount screws (2) + output axle (2)</td></tr>
+      <tr><td>M3 nut</td><td class="dim">M3 hex</td><td class="qty">4</td><td></td></tr>
+      <tr><td>M3 washer</td><td class="dim">M3 flat</td><td class="qty">4</td><td>Between gears and supports</td></tr>
+      <tr><td>String</td><td class="dim">~300mm, 2mm</td><td class="qty">1</td><td>Tie to drum for tug-of-war challenge</td></tr>
+    </table>
+    <p class="note">Gear ratio 12:36 = 1:3 — output turns 3× slower with 3× more torque. Small gear press-fits onto TT motor D-shaft (Ø5.8mm bore).</p>
+  </div>
+</div>
+
+<!-- ====== M5 HAND-CRANK AUTOMATA ====== -->
+<div class="project">
+  <div class="project-header">
+    <h2>M5 — Hand-Crank Automata (Crank + Cam)</h2>
+    <span class="diff diff-med">Medium</span>
+  </div>
+  <div class="section">
+    <h3>Laser-Cut Parts</h3>
+    <table>
+      <tr><th>Part</th><th>Dimensions</th><th>Material</th><th style="text-align:center">Qty</th></tr>
+      <tr><td>Base</td><td class="dim">140 × 100mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Side frame</td><td class="dim">60 × 140mm</td><td class="mat">3mm MDF</td><td class="qty">2</td></tr>
+      <tr><td>Crank disc</td><td class="dim">Ø50mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Egg cam</td><td class="dim">~44 × 32mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Follower</td><td class="dim">12 × 90mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Crank handle</td><td class="dim">70 × 14mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Scene panel</td><td class="dim">100 × 80mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+    </table>
+    <h3>Hardware</h3>
+    <table>
+      <tr><th>Item</th><th>Spec</th><th style="text-align:center">Qty</th><th>Purpose</th></tr>
+      <tr><td>M3 × 30mm screw</td><td class="dim">M3 pan head</td><td class="qty">1</td><td>Main axle (crank disc + cam + frames)</td></tr>
+      <tr><td>M3 × 20mm screw</td><td class="dim">M3 pan head</td><td class="qty">2</td><td>Crank pin (offset) + handle</td></tr>
+      <tr><td>M3 nut</td><td class="dim">M3 hex</td><td class="qty">3</td><td></td></tr>
+      <tr><td>M3 washer</td><td class="dim">M3 flat</td><td class="qty">4</td><td>Between moving parts</td></tr>
+    </table>
+    <p class="note">Provide card, scissors, markers, pipe cleaners, googly eyes for decorating the scene panel and follower character.</p>
+  </div>
+</div>
+
+<!-- ====== M6 TOWER CRANE ====== -->
+<div class="project">
+  <div class="project-header">
+    <h2>M6 — Tower Crane (Pulleys + Gears)</h2>
+    <span class="diff diff-med">Medium</span>
+  </div>
+  <div class="section">
+    <h3>Laser-Cut Parts</h3>
+    <table>
+      <tr><th>Part</th><th>Dimensions</th><th>Material</th><th style="text-align:center">Qty</th></tr>
+      <tr><td>Base</td><td class="dim">200 × 150mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Tower frame</td><td class="dim">40 × 250mm</td><td class="mat">3mm MDF</td><td class="qty">2</td></tr>
+      <tr><td>Cross brace</td><td class="dim">20 × 20mm</td><td class="mat">3mm MDF</td><td class="qty">2</td></tr>
+      <tr><td>Jib arm</td><td class="dim">220 × 25mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Pulley wheel</td><td class="dim">Ø50mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Winch drum</td><td class="dim">Ø35mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Small gear (12T)</td><td class="dim">Ø28mm, module 2</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Large gear (24T)</td><td class="dim">Ø52mm, module 2</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Hook plate</td><td class="dim">40 × 40mm (U-hook cutout)</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Crank handle</td><td class="dim">70 × 14mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+    </table>
+    <h3>Hardware</h3>
+    <table>
+      <tr><th>Item</th><th>Spec</th><th style="text-align:center">Qty</th><th>Purpose</th></tr>
+      <tr><td>M3 × 20mm screw</td><td class="dim">M3 pan head</td><td class="qty">5</td><td>Pulley axle, drum axle, gear axles, crank</td></tr>
+      <tr><td>M3 × 30mm screw</td><td class="dim">M3 pan head</td><td class="qty">2</td><td>Through tower for jib support</td></tr>
+      <tr><td>M3 nut</td><td class="dim">M3 hex</td><td class="qty">7</td><td></td></tr>
+      <tr><td>M3 washer</td><td class="dim">M3 flat</td><td class="qty">6</td><td>Between gears/pulleys and frames</td></tr>
+      <tr><td>String</td><td class="dim">~800mm, 2mm</td><td class="qty">1</td><td>Winch → pulley → hook</td></tr>
+      <tr><td>Counterweight</td><td class="dim">Coins / Blu-Tack</td><td class="qty">shared</td><td>Ballast for base stability</td></tr>
+    </table>
+    <p class="note">Gear ratio 12:24 = 1:2 on the winch. Counterweight holes in base — thread string through or stack coins. Tower is 250mm tall — impressive!</p>
+  </div>
+</div>
+
+<!-- ====== M7 ROVER ====== -->
+<div class="project">
+  <div class="project-header">
+    <h2>M7 — Rover Ramp Challenge (Wheels + Gears + Motor)</h2>
+    <span class="diff diff-high">High</span>
+  </div>
+  <div class="section">
+    <h3>Laser-Cut Parts</h3>
+    <table>
+      <tr><th>Part</th><th>Dimensions</th><th>Material</th><th style="text-align:center">Qty</th></tr>
+      <tr><td>Chassis</td><td class="dim">150 × 80mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Side rail</td><td class="dim">150 × 30mm</td><td class="mat">3mm MDF</td><td class="qty">2</td></tr>
+      <tr><td>Wheel</td><td class="dim">Ø60mm (with lightening holes)</td><td class="mat">3mm MDF</td><td class="qty">4</td></tr>
+      <tr><td>TT Motor mount</td><td class="dim">80 × 40mm (24×20mm cutout)</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Small gear (10T)</td><td class="dim">Ø24mm, module 2, bore Ø5.8mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+      <tr><td>Large gear (30T)</td><td class="dim">Ø64mm, module 2, bore Ø3.2mm</td><td class="mat">3mm MDF</td><td class="qty">1</td></tr>
+    </table>
+    <h3>Hardware &amp; Electronics</h3>
+    <table>
+      <tr><th>Item</th><th>Spec</th><th style="text-align:center">Qty</th><th>Purpose</th></tr>
+      <tr><td>TT Motor</td><td class="dim">3–6V DC gearmotor, D-shaft Ø5.5mm</td><td class="qty">1</td><td>Drive motor</td></tr>
+      <tr><td>2×AA Battery holder</td><td class="dim">With switch + leads</td><td class="qty">1</td><td>Power supply</td></tr>
+      <tr><td>AA Batteries</td><td class="dim">1.5V</td><td class="qty">2</td><td></td></tr>
+      <tr><td>M3 × 20mm screw</td><td class="dim">M3 pan head</td><td class="qty">4</td><td>Motor mount (2) + front axle (2)</td></tr>
+      <tr><td>M3 × 30mm screw</td><td class="dim">M3 pan head</td><td class="qty">2</td><td>Rear drive axle (through chassis + wheels)</td></tr>
+      <tr><td>M3 nut</td><td class="dim">M3 hex</td><td class="qty">6</td><td></td></tr>
+      <tr><td>M3 washer</td><td class="dim">M3 flat</td><td class="qty">8</td><td>Between wheels and chassis/rails</td></tr>
+      <tr><td>Rubber bands</td><td class="dim">#64 (89mm)</td><td class="qty">4</td><td>Wrap around wheels for traction</td></tr>
+    </table>
+    <p class="note">Gear ratio 10:30 = 1:3 — combined with TT motor's internal gearbox (~1:48), total ratio is ~1:144. Plenty of torque for ramp climbing! Rubber bands on wheels are essential for grip.</p>
+  </div>
+</div>
+
+<!-- ====== M8 ROBOTIC GRIPPER ====== -->
+<div class="project">
+  <div class="project-header">
+    <h2>M8 — Robotic Gripper (Linkages)</h2>
+    <span class="diff diff-med">Medium</span>
+  </div>
+  <div class="section">
+    <h3>Laser-Cut Parts</h3>
+    <table>
+      <tr><th>Part</th><th>Dimensions</th><th>Material</th><th style="text-align:center">Qty</th></tr>
+      <tr><td>Handle bar</td><td class="dim">120 × 20mm</td><td class="mat">3mm MDF</td><td class="qty">2</td></tr>
+      <tr><td>Scissor arm</td><td class="dim">100 × 15mm (3 holes)</td><td class="mat">3mm MDF</td><td class="qty">4</td></tr>
+      <tr><td>Gripper jaw</td><td class="dim">50 × 30mm</td><td class="mat">3mm MDF</td><td class="qty">2</td></tr>
+      <tr><td>Jaw pad backing</td><td class="dim">30 × 15mm</td><td class="mat">3mm MDF</td><td class="qty">2</td></tr>
+      <tr><td>Spacer washer</td><td class="dim">Ø12mm (Ø3.2mm bore)</td><td class="mat">3mm MDF</td><td class="qty">10</td></tr>
+      <tr><td>Elastic band hook</td><td class="dim">20 × 10mm (with notch)</td><td class="mat">3mm MDF</td><td class="qty">2</td></tr>
+    </table>
+    <h3>Hardware</h3>
+    <table>
+      <tr><th>Item</th><th>Spec</th><th style="text-align:center">Qty</th><th>Purpose</th></tr>
+      <tr><td>M3 × 20mm screw</td><td class="dim">M3 pan head</td><td class="qty">7</td><td>All pivot points (handle×2, scissor centres×2, scissor-to-jaw×2, handle-link×1)</td></tr>
+      <tr><td>M3 nut</td><td class="dim">M3 hex</td><td class="qty">7</td><td></td></tr>
+      <tr><td>M3 washer</td><td class="dim">M3 flat</td><td class="qty">10</td><td>Between every moving layer (use MDF spacers too)</td></tr>
+      <tr><td>Rubber band</td><td class="dim">#64 (89mm)</td><td class="qty">1</td><td>Return spring — hooks onto band hooks to open jaws</td></tr>
+      <tr><td>Foam/rubber pad</td><td class="dim">~30 × 15 × 2mm</td><td class="qty">2</td><td>Glue onto jaw pad backings for grip</td></tr>
+    </table>
+    <p class="note">10 MDF spacer washers are included — place between scissor layers at each pivot so they don't bind. The elastic return band is critical for the gripper to spring open.</p>
+  </div>
+</div>
+
+<!-- ====== TOTALS ====== -->
+<div class="summary-box">
+  <h2>Grand Total — All Hardware Per Student Kit</h2>
+  <table>
+    <tr><th>Item</th><th>Spec</th><th style="text-align:center">Total Qty</th></tr>
+    <tr><td>M3 × 20mm screw</td><td>Pan head</td><td class="qty">26</td></tr>
+    <tr><td>M3 × 30mm screw</td><td>Pan head</td><td class="qty">6</td></tr>
+    <tr class="totals"><td><strong>Total M3 screws</strong></td><td></td><td class="qty">32</td></tr>
+    <tr><td>M3 hex nut</td><td></td><td class="qty">33</td></tr>
+    <tr><td>M3 flat washer</td><td></td><td class="qty">44</td></tr>
+    <tr><td>TT Motor</td><td>3–6V, D-shaft</td><td class="qty">2</td></tr>
+    <tr><td>2×AA Battery holder</td><td>With switch</td><td class="qty">2</td></tr>
+    <tr><td>AA Batteries</td><td>1.5V</td><td class="qty">4</td></tr>
+    <tr><td>String / twine</td><td>2mm, ~1.7m total</td><td class="qty">1 roll (3m)</td></tr>
+    <tr><td>Rubber bands #64</td><td>89mm</td><td class="qty">5</td></tr>
+    <tr><td>Foam/rubber pads</td><td>30×15×2mm</td><td class="qty">2</td></tr>
+    <tr><td>3mm MDF sheets</td><td>400 × 600mm</td><td class="qty">3</td></tr>
+    <tr><td>3mm Birch ply strip</td><td>~300 × 25mm</td><td class="qty">1</td></tr>
+  </table>
+  <p class="note" style="margin-top:12px"><strong>Tip:</strong> Buy M3 screws in bulk packs (100+). Buy M3 nuts and washers in bulk too. Add 20% spare for drops and mistakes. Round up to 40 screws of each length, 50 nuts, and 60 washers per kit.</p>
+</div>
+
+<footer>
+  Generated for Robocode Spring Camp 2026 &mdash; All dimensions in mm &mdash; Material: 3mm MDF (400&times;600mm sheets)
+</footer>
+
+</body>
+</html>

@@ -179,10 +179,39 @@
   .site-footer{background:var(--bg-dark);padding:22px;text-align:center;color:#7ab;font-size:.82rem;font-weight:600}
   .site-footer span{color:var(--btn-primary)}
 
+  /* ── LASER CUT KITS ── */
+  .sel-laser{background:linear-gradient(135deg,#ff9752 0%,#d47530 100%);box-shadow:0 8px 40px rgba(255,151,82,.3);grid-column:1/-1}
+  .sel-laser:hover{box-shadow:0 16px 60px rgba(255,151,82,.45)}
+  .laser-img{width:100%;border-radius:var(--radius-sm);border:1px solid #e0e8e9;margin:8px 0}
+  .laser-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .laser-card{background:var(--bg-white);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;transition:transform .2s}
+  .laser-card:hover{transform:translateY(-3px)}
+  .laser-card img{width:100%;display:block;background:#fafafa}
+  .laser-card .lc-info{padding:12px 16px}
+  .laser-card .lc-title{font-weight:800;font-size:.9rem;color:var(--text-dark);margin-bottom:4px}
+  .laser-card .lc-sub{font-size:.75rem;color:#8aaa;font-weight:600}
+  .laser-card .lc-btns{padding:0 16px 12px;display:flex;gap:6px;flex-wrap:wrap}
+  .dl-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;background:var(--btn-primary);color:var(--text-dark);text-decoration:none;font-weight:700;font-size:.75rem;transition:background .2s}
+  .dl-btn:hover{background:var(--primary)}
+  .dl-btn.dl-orange{background:var(--btn-tertiary)}
+  .dl-btn.dl-orange:hover{background:var(--tertiary)}
+  .hw-table{width:100%;border-collapse:collapse;margin-top:8px}
+  .hw-table th{text-align:left;font-size:.72rem;font-weight:700;color:#8aaa;padding:6px 8px;border-bottom:2px solid #e0eeee;text-transform:uppercase;letter-spacing:.5px}
+  .hw-table td{padding:6px 8px;font-size:.85rem;color:#3a5a5d;border-bottom:1px solid #eef4f4}
+  .hw-table .hw-qty{text-align:center;font-weight:800;color:var(--tertiary)}
+  .hw-table .hw-spec{font-family:'Courier New',monospace;font-size:.78rem;color:#7a6aaa}
+  .grand-total{background:var(--bg-white);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:24px;overflow:hidden}
+  .gt-head{padding:16px 22px;background:linear-gradient(135deg,#fff6ed,#ffe8d5);border-bottom:2px solid #ffd4a8;display:flex;align-items:center;gap:10px}
+  .gt-head h3{font-size:.95rem;font-weight:800;color:var(--text-dark)}
+  .gt-body{padding:16px 22px}
+  .diag-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}
+
   @media(max-width:600px){
     .selector-grid{grid-template-columns:1fr}
     .cards-grid{grid-template-columns:1fr}
     .challenge-grid{grid-template-columns:1fr}
+    .laser-grid{grid-template-columns:1fr}
+    .diag-row{grid-template-columns:1fr}
     .selector-card{padding:32px 24px}
     .hero-title{font-size:1.4rem}
     .hero-inner{padding:24px 18px}
@@ -225,12 +254,21 @@
         <p>Arduino circuits, sensors, LEDs, servos &amp; motors</p>
         <span class="sel-count">14 Projects</span>
       </div>
+      <div class="selector-card sel-laser" onclick="showLaserKits()">
+        <span class="sel-icon">&#9986;</span>
+        <h2>Laser Cut Kits</h2>
+        <p>Cut sheets, mechanism diagrams, hardware lists &amp; DXF files</p>
+        <span class="sel-count">8 Mech Kits</span>
+      </div>
     </div>
   </div>
 
   <!-- GRIDS -->
   <div id="grid-mech" class="grid-view"></div>
   <div id="grid-elec" class="grid-view"></div>
+
+  <!-- LASER CUT KITS -->
+  <div id="grid-laser" class="grid-view"></div>
 
   <!-- MODULE -->
   <div id="module-view" class="module-view"></div>
@@ -443,6 +481,97 @@ const P = [
     tips:'Cardboard boxes with a flap work well. Place a sweet as "treasure". This is a capstone combining many skills.'}
 ];
 
+// ── LASER CUT DATA ──
+const LASER={
+  m1:{
+    diagram:'diagrams/m1_catapult_lever.png',
+    preview:'svg_preview/M1_Catapult.png',
+    sheet:'sheets/M1_Catapult_sheet1.png',
+    dxf:'dxf_output/M1_Catapult.dxf',
+    sheetDxf:'sheets/M1_Catapult_sheet1.dxf',
+    parts:[{n:'Base plate',d:'200 × 120mm',m:'3mm MDF',q:1},{n:'Side support',d:'60 × 80mm',m:'3mm MDF',q:2},{n:'Throwing arm',d:'280 × 20mm',m:'3mm Birch ply',q:1},{n:'Stop piece',d:'60 × 50mm',m:'3mm MDF',q:1},{n:'Cup / cradle (cross)',d:'80 × 80mm unfolded',m:'3mm MDF',q:1}],
+    hw:[{i:'M3 × 30mm screw',s:'Pan head',q:1,u:'Fulcrum pivot pin'},{i:'M3 nut',s:'Hex',q:1,u:'Lock fulcrum'},{i:'M3 washer',s:'Flat',q:4,u:'Between arm & supports'}]
+  },
+  m2:{
+    diagram:'diagrams/m2_pulley_lift.png',
+    preview:'svg_preview/M2_Pulley_Lift.png',
+    sheet:'sheets/M2_Pulley_Lift_sheet1.png',
+    dxf:'dxf_output/M2_Pulley_Lift.dxf',
+    sheetDxf:'sheets/M2_Pulley_Lift_sheet1.dxf',
+    parts:[{n:'Base plate',d:'180 × 120mm',m:'3mm MDF',q:1},{n:'Upright',d:'50 × 200mm',m:'3mm MDF',q:2},{n:'Top beam',d:'126 × 30mm',m:'3mm MDF',q:1},{n:'Pulley wheel',d:'Ø50mm',m:'3mm MDF',q:1},{n:'Winch drum',d:'Ø40mm',m:'3mm MDF',q:1},{n:'Crank handle',d:'80 × 15mm',m:'3mm MDF',q:1},{n:'Hook plate',d:'50 × 50mm',m:'3mm MDF',q:1}],
+    hw:[{i:'M3 × 20mm screw',s:'Pan head',q:4,u:'Pulley axle, winch, hook'},{i:'M3 × 30mm screw',s:'Pan head',q:1,u:'Beam through-bolt'},{i:'M3 nut',s:'Hex',q:5,u:'Lock screws'},{i:'M3 washer',s:'Flat',q:6,u:'Spacers'},{i:'String',s:'~1.5m cotton',q:1,u:'Lift line'}]
+  },
+  m3:{
+    diagram:'diagrams/m3_cam_mechanism.png',
+    preview:'svg_preview/M3_Automata_Card.png',
+    sheet:'sheets/M3_Automata_Card_sheet1.png',
+    dxf:'dxf_output/M3_Automata_Card.dxf',
+    sheetDxf:'sheets/M3_Automata_Card_sheet1.dxf',
+    parts:[{n:'Base',d:'100 × 80mm',m:'3mm MDF',q:1},{n:'Side frame',d:'80 × 120mm',m:'3mm MDF',q:2},{n:'Egg cam',d:'~50 × 36mm',m:'3mm MDF',q:1},{n:'Round cam (eccentric)',d:'Ø40mm',m:'3mm MDF',q:1},{n:'Snail cam',d:'~50mm',m:'3mm MDF',q:1},{n:'Follower',d:'15 × 80mm',m:'3mm MDF',q:1},{n:'Handle',d:'60 × 12mm',m:'3mm MDF',q:1}],
+    hw:[{i:'M3 × 20mm screw',s:'Pan head',q:2,u:'Cam axle, handle'},{i:'M3 nut',s:'Hex',q:2,u:'Lock screws'},{i:'M3 washer',s:'Flat',q:2,u:'Spacers'}]
+  },
+  m4:{
+    diagram:'diagrams/m4_gear_ratio.png',
+    preview:'svg_preview/M4_Gear_Down_Motor.png',
+    sheet:'sheets/M4_Gear_Down_Motor_sheet1.png',
+    dxf:'dxf_output/M4_Gear_Down_Motor.dxf',
+    sheetDxf:'sheets/M4_Gear_Down_Motor_sheet1.dxf',
+    parts:[{n:'Base',d:'160 × 100mm',m:'3mm MDF',q:1},{n:'Axle support',d:'50 × 70mm',m:'3mm MDF',q:2},{n:'Motor mount',d:'80 × 40mm',m:'3mm MDF',q:1},{n:'Small gear (12T)',d:'Ø28mm, mod 2',m:'3mm MDF',q:1},{n:'Large gear (36T)',d:'Ø76mm, mod 2',m:'3mm MDF',q:1},{n:'Output drum',d:'Ø40mm',m:'3mm MDF',q:1}],
+    hw:[{i:'M3 × 20mm screw',s:'Pan head',q:4,u:'Motor mount, axles'},{i:'M3 × 30mm screw',s:'Pan head',q:1,u:'Through gear stack'},{i:'M3 nut',s:'Hex',q:5,u:'Lock screws'},{i:'M3 washer',s:'Flat',q:4,u:'Spacers'},{i:'TT motor',s:'3-6V DC, D-shaft',q:1,u:'Drive motor'},{i:'2×AA battery holder',s:'With switch + leads',q:1,u:'Power'},{i:'AA batteries',s:'1.5V',q:2,u:'Power'}]
+  },
+  m5:{
+    diagram:'diagrams/m5_crank_cam.png',
+    preview:'svg_preview/M5_Hand_Crank_Automata.png',
+    sheet:'sheets/M5_Hand_Crank_Automata_sheet1.png',
+    dxf:'dxf_output/M5_Hand_Crank_Automata.dxf',
+    sheetDxf:'sheets/M5_Hand_Crank_Automata_sheet1.dxf',
+    parts:[{n:'Base',d:'140 × 100mm',m:'3mm MDF',q:1},{n:'Side frame',d:'60 × 140mm',m:'3mm MDF',q:2},{n:'Crank disc',d:'Ø50mm',m:'3mm MDF',q:1},{n:'Cam',d:'~44 × 32mm',m:'3mm MDF',q:1},{n:'Follower',d:'12 × 90mm',m:'3mm MDF',q:1},{n:'Handle',d:'70 × 14mm',m:'3mm MDF',q:1},{n:'Scene panel',d:'100 × 80mm',m:'3mm MDF',q:1}],
+    hw:[{i:'M3 × 20mm screw',s:'Pan head',q:3,u:'Axle, crank pin, scene'},{i:'M3 nut',s:'Hex',q:3,u:'Lock screws'},{i:'M3 washer',s:'Flat',q:4,u:'Spacers'}]
+  },
+  m6:{
+    diagram:'diagrams/m6_tower_crane.png',
+    preview:'svg_preview/M6_Tower_Crane.png',
+    sheet:'sheets/M6_Tower_Crane_sheet1.png',
+    dxf:'dxf_output/M6_Tower_Crane.dxf',
+    sheetDxf:'sheets/M6_Tower_Crane_sheet1.dxf',
+    parts:[{n:'Base',d:'200 × 150mm',m:'3mm MDF',q:1},{n:'Tower frame',d:'40 × 250mm',m:'3mm MDF',q:2},{n:'Cross brace',d:'20 × 20mm',m:'3mm MDF',q:2},{n:'Jib (arm)',d:'220 × 25mm',m:'3mm MDF',q:1},{n:'Pulley',d:'Ø50mm',m:'3mm MDF',q:1},{n:'Winch drum',d:'Ø35mm',m:'3mm MDF',q:1},{n:'Small gear (12T)',d:'Ø28mm',m:'3mm MDF',q:1},{n:'Large gear (24T)',d:'Ø52mm',m:'3mm MDF',q:1},{n:'Hook plate',d:'40 × 40mm',m:'3mm MDF',q:1},{n:'Crank',d:'70 × 14mm',m:'3mm MDF',q:1}],
+    hw:[{i:'M3 × 20mm screw',s:'Pan head',q:6,u:'Axles, pulley, hook'},{i:'M3 × 30mm screw',s:'Pan head',q:2,u:'Tower through-bolts'},{i:'M3 nut',s:'Hex',q:8,u:'Lock screws'},{i:'M3 washer',s:'Flat',q:8,u:'Spacers'},{i:'String',s:'~1.5m cotton',q:1,u:'Lift line'}]
+  },
+  m7:{
+    diagram:'diagrams/m7_rover_gear_reduction.png',
+    preview:'svg_preview/M7_Rover_Ramp.png',
+    sheet:'sheets/M7_Rover_sheet1.png',
+    dxf:'dxf_output/M7_Rover_Ramp.dxf',
+    sheetDxf:'sheets/M7_Rover_sheet1.dxf',
+    parts:[{n:'Chassis',d:'150 × 80mm',m:'3mm MDF',q:1},{n:'Side rail',d:'150 × 30mm',m:'3mm MDF',q:2},{n:'Wheel',d:'Ø60mm',m:'3mm MDF',q:4},{n:'Motor mount',d:'80 × 40mm',m:'3mm MDF',q:1},{n:'Small gear (10T)',d:'Ø24mm, mod 2',m:'3mm MDF',q:1},{n:'Large gear (30T)',d:'Ø64mm, mod 2',m:'3mm MDF',q:1}],
+    hw:[{i:'M3 × 20mm screw',s:'Pan head',q:8,u:'Wheel axles, gear axles, motor mount'},{i:'M3 × 30mm screw',s:'Pan head',q:2,u:'Through chassis rails'},{i:'M3 nut',s:'Hex',q:10,u:'Lock screws'},{i:'M3 washer',s:'Flat',q:10,u:'Spacers'},{i:'TT motor',s:'3-6V DC, D-shaft',q:1,u:'Drive motor'},{i:'2×AA battery holder',s:'With switch + leads',q:1,u:'Power'},{i:'AA batteries',s:'1.5V',q:2,u:'Power'},{i:'Rubber bands',s:'#64 (89mm)',q:4,u:'Wheel grip'}]
+  },
+  m8:{
+    diagram:'diagrams/m8_robotic_gripper.png',
+    preview:'svg_preview/M8_Robotic_Gripper.png',
+    sheet:'sheets/M8_Robotic_Gripper_sheet1.png',
+    dxf:'dxf_output/M8_Robotic_Gripper.dxf',
+    sheetDxf:'sheets/M8_Robotic_Gripper_sheet1.dxf',
+    parts:[{n:'Handle bar',d:'120 × 20mm',m:'3mm MDF',q:2},{n:'Scissor arm',d:'100 × 15mm',m:'3mm MDF',q:4},{n:'Jaw',d:'50 × 30mm',m:'3mm MDF',q:2},{n:'Jaw pad',d:'30 × 15mm',m:'3mm MDF',q:2},{n:'Spacer washer',d:'Ø12mm',m:'3mm MDF',q:10},{n:'Band hook',d:'20 × 10mm',m:'3mm MDF',q:2}],
+    hw:[{i:'M3 × 20mm screw',s:'Pan head',q:5,u:'Pivot pins'},{i:'M3 nut',s:'Hex',q:5,u:'Lock screws'},{i:'M3 washer',s:'Flat',q:10,u:'Between layers'},{i:'Rubber bands',s:'#64 (89mm)',q:2,u:'Return springs'},{i:'Foam pads',s:'30 × 15 × 2mm',q:2,u:'Jaw grip'}]
+  }
+};
+
+const GRAND_TOTAL=[
+  {i:'M3 × 20mm pan head screw',q:30,n:'Pivots, axles, assembly'},
+  {i:'M3 × 30mm pan head screw',q:10,n:'Through thicker assemblies'},
+  {i:'M3 hex nut',q:40,n:'Pair with screws'},
+  {i:'M3 flat washer',q:40,n:'Between moving parts'},
+  {i:'TT Motor (3-6V, D-shaft)',q:2,n:'M4 + M7'},
+  {i:'2×AA battery holder (switch + leads)',q:2,n:'M4 + M7'},
+  {i:'AA batteries (1.5V)',q:4,n:'2 per holder'},
+  {i:'String / twine (~2mm, 3m)',q:1,n:'M2, M4, M6'},
+  {i:'Rubber bands #64 (89mm)',q:8,n:'M7 wheels, M8 return'},
+  {i:'3mm MDF sheet (400 × 600mm)',q:3,n:'All laser-cut parts'},
+  {i:'3mm Birch ply strip (~300 × 25mm)',q:1,n:'M1 catapult arm'},
+  {i:'Foam pads (30 × 15 × 2mm)',q:2,n:'M8 jaw pads'}
+];
+
 // ── RENDER ──
 function renderGrids(){
   ['mech','elec'].forEach(type=>{
@@ -486,6 +615,56 @@ function goHome(){
   document.querySelectorAll('.grid-view').forEach(g=>g.classList.remove('active'));
   document.getElementById('module-view').className='module-view';
   document.getElementById('home').style.display='';
+  window.scrollTo(0,0);
+}
+
+function showLaserKits(){
+  document.getElementById('home').style.display='none';
+  document.getElementById('module-view').className='module-view';
+  document.querySelectorAll('.grid-view').forEach(g=>g.classList.remove('active'));
+
+  const el=document.getElementById('grid-laser');
+  const mechModules=P.filter(p=>p.type==='mech');
+
+  let grandHtml=GRAND_TOTAL.map(r=>`<tr><td>${r.i}</td><td class="hw-qty">${r.q}</td><td>${r.n}</td></tr>`).join('');
+
+  let cardsHtml=mechModules.map(p=>{
+    const L=LASER[p.id];if(!L)return'';
+    return `
+      <div class="laser-card">
+        <img src="${L.sheet}" alt="${p.title} sheet layout" loading="lazy">
+        <div class="lc-info">
+          <div class="lc-title">${p.num} — ${p.title}</div>
+          <div class="lc-sub">${L.parts.length} laser-cut parts &middot; ${L.hw.length} hardware items</div>
+        </div>
+        <div class="lc-btns">
+          <a class="dl-btn" href="${L.dxf}" download>&#11015; Parts DXF</a>
+          <a class="dl-btn dl-orange" href="${L.sheetDxf}" download>&#11015; Sheet DXF</a>
+        </div>
+      </div>`;
+  }).join('');
+
+  el.innerHTML=`
+    <div class="grid-header" style="background:linear-gradient(135deg,#5a3000,#8a5520)">
+      <button class="gh-back" onclick="goHome()">&#8249; Back</button>
+      <h2>Laser Cut Kits</h2>
+      <p>Cut sheets, mechanism diagrams, hardware lists &amp; DXF downloads for all 8 mechanical projects</p>
+    </div>
+    <div class="grid-body" style="background:var(--bg-light-tan)">
+      <div class="grand-total">
+        <div class="gt-head"><div class="m-section-icon">&#128230;</div><h3>Hardware Shopping List (per student kit, all 8 projects)</h3></div>
+        <div class="gt-body">
+          <table class="hw-table">
+            <tr><th>Item</th><th style="text-align:center">Qty</th><th>Notes</th></tr>
+            ${grandHtml}
+          </table>
+        </div>
+      </div>
+      <h3 style="font-weight:800;color:var(--text-dark);margin-bottom:14px;font-size:1.05rem">Sheet Nesting Layouts (400 × 600mm MDF)</h3>
+      <div class="laser-grid">${cardsHtml}</div>
+    </div>`;
+
+  el.classList.add('active');
   window.scrollTo(0,0);
 }
 
@@ -546,6 +725,43 @@ function openModule(id){
           <div class="m-section-head sh-tan"><div class="m-section-icon">&#128230;</div><h3>${p.type==='mech'?'Kit List':'Components'}</h3></div>
           <div class="m-section-body"><div class="kit-chips">${p.kit.map(k=>'<span class="kit-chip '+cc+'">'+k+'</span>').join('')}</div></div>
         </div>
+
+        ${(()=>{
+          const L=LASER[p.id];if(!L)return'';
+          return `
+        <div class="m-section">
+          <div class="m-section-head sh-turq"><div class="m-section-icon">&#9881;</div><h3>Mechanism Diagram</h3></div>
+          <div class="m-section-body"><img class="laser-img" src="${L.diagram}" alt="${p.title} mechanism diagram" loading="lazy"></div>
+        </div>
+
+        <div class="m-section">
+          <div class="m-section-head sh-tan"><div class="m-section-icon">&#9986;</div><h3>Laser Cut Parts</h3></div>
+          <div class="m-section-body">
+            <table class="hw-table">
+              <tr><th>Part</th><th>Dimensions</th><th>Material</th><th style="text-align:center">Qty</th></tr>
+              ${L.parts.map(r=>'<tr><td>'+r.n+'</td><td class="hw-spec">'+r.d+'</td><td>'+r.m+'</td><td class="hw-qty">'+r.q+'</td></tr>').join('')}
+            </table>
+            <div class="diag-row">
+              <div><p style="font-size:.78rem;font-weight:700;color:#8aaa;margin-bottom:4px">FLAT CUT LAYOUT</p><img class="laser-img" src="${L.preview}" alt="${p.title} cut layout" loading="lazy"></div>
+              <div><p style="font-size:.78rem;font-weight:700;color:#8aaa;margin-bottom:4px">SHEET NESTING (400 × 600mm)</p><img class="laser-img" src="${L.sheet}" alt="${p.title} sheet nesting" loading="lazy"></div>
+            </div>
+            <div class="dl-btns" style="margin-top:12px">
+              <a class="dl-btn" href="${L.dxf}" download>&#11015; Download Parts DXF</a>
+              <a class="dl-btn dl-orange" href="${L.sheetDxf}" download>&#11015; Download Sheet DXF</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="m-section">
+          <div class="m-section-head sh-pink"><div class="m-section-icon">&#128295;</div><h3>Hardware Required</h3></div>
+          <div class="m-section-body">
+            <table class="hw-table">
+              <tr><th>Item</th><th>Spec</th><th style="text-align:center">Qty</th><th>Purpose</th></tr>
+              ${L.hw.map(r=>'<tr><td>'+r.i+'</td><td class="hw-spec">'+r.s+'</td><td class="hw-qty">'+r.q+'</td><td>'+r.u+'</td></tr>').join('')}
+            </table>
+          </div>
+        </div>`;
+        })()}
 
         <div class="m-section">
           <div class="m-section-head sh-green"><div class="m-section-icon">&#128218;</div><h3>Teacher Tips</h3></div>
