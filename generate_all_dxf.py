@@ -152,8 +152,8 @@ def m1_catapult():
         # Bottom tabs
         tab_down(msp, ox + sw / 2 - 15, s1y)
         tab_down(msp, ox + sw / 2 + 15, s1y)
-        # Arm pass-through slot at pivot height (arm rocks in slot)
-        slot_v(msp, ox + sw / 2, s1y + sh - 15, SLOT_W, 22)
+        # Arm pass-through slot at pivot height (arm lies flat, rocks in slot)
+        slot_h(msp, ox + sw / 2, s1y + sh - 15, 22, SLOT_W)
         lbl = "M1 SIDE L" if i == 0 else "M1 SIDE R"
         label(msp, ox + 5, s1y + sh - 8, lbl)
 
