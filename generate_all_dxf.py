@@ -398,7 +398,7 @@ def m4_gear_down():
         label(msp, ox + 3, by + ah - 10, lbl)
 
     # ---- ROW 2: Motor mount ----
-    row2y = by - GAP - 50
+    row2y = by - GAP - 60  # extra clearance for large gear (r=38) centred at mmy+20
 
     # TT Motor mount — 80 × 40 with rectangular slot for motor body
     mmw, mmh = 80, 40
@@ -494,15 +494,15 @@ def m5_hand_crank():
     circ(msp, camx, camy, M3_R)
     label(msp, camx - 10, camy - 2, "M5 CAM")
 
-    # Follower — 12 × 90
+    # Follower — 90 × 12 (laid horizontal)
     flx = camx + 22 + GAP
-    fly = row2y - 45
-    rect(msp, flx, fly, 12, 90)
-    circ(msp, flx + 6, fly + 85, 1.5)
-    label(msp, flx + 1, fly + 40, "FOL", height=2)
+    fly = row2y - 6
+    rect(msp, flx, fly, 90, 12)
+    circ(msp, flx + 85, fly + 6, 1.5)
+    label(msp, flx + 30, fly + 2, "FOL", height=2)
 
     # Handle — 70 × 14
-    chx = flx + 12 + GAP
+    chx = flx + 90 + GAP
     chy = row2y - 7
     rect(msp, chx, chy, 70, 14)
     circ(msp, chx + 8, chy + 7, M3_R)
@@ -510,7 +510,8 @@ def m5_hand_crank():
     label(msp, chx + 18, chy + 2, "M5 HANDLE", height=2)
 
     # ---- ROW 3: Scene panel — 100 × 80 ----
-    row3y = row2y - 50 - GAP
+    row2_bottom = row2y - 25  # crank disc radius is the lowest extent
+    row3y = row2_bottom - GAP - 80  # scene panel is 80 tall
     spx = bx
     spy = row3y
     rect(msp, spx, spy, 100, 80)
@@ -693,7 +694,8 @@ def m7_rover():
         label(msp, wcx - 6, wcy - 2, f"W{i+1}", height=2)
 
     # ---- ROW 3: TT Motor mount + Gears ----
-    row3y = row2y - 35 - GAP - 25
+    # Large gear r=32, centred at row3y+20; must clear wheel bottom (row2y-30)
+    row3y = row2y - 30 - GAP - 52  # 30=wheel_r, 52=mmh/2+gear_r(32)
 
     # TT Motor mount — 80 × 40
     mmx, mmy = bx, row3y
