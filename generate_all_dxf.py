@@ -74,8 +74,22 @@ def line(msp, x1, y1, x2, y2, layer="ENGRAVE"):
 
 
 def tab_down(msp, cx, y, tw=TAB_W):
-    """A single tab protruding downward from y, centred at cx."""
+    """DEPRECATED — use rect_with_bottom_tabs instead."""
     rect(msp, cx - tw / 2, y - MAT, tw, MAT)
+
+
+def rect_with_bottom_tabs(msp, x, y, w, h, tab_cxs, tw=TAB_W, layer="CUTS"):
+    """Rectangle with tabs protruding downward from bottom edge, as one continuous cut.
+    tab_cxs: list of absolute X centres for each tab."""
+    tabs = sorted(tab_cxs)
+    # Clockwise: top-left → top-right → bottom-right → bottom edge R-to-L with tab dips → bottom-left
+    pts = [(x, y + h), (x + w, y + h), (x + w, y)]
+    for tcx in reversed(tabs):
+        tr = tcx + tw / 2
+        tl = tcx - tw / 2
+        pts.extend([(tr, y), (tr, y - MAT), (tl, y - MAT), (tl, y)])
+    pts.append((x, y))
+    msp.add_lwpolyline(pts, close=True, dxfattribs={"layer": layer})
 
 
 def gear_profile(msp, cx, cy, teeth, module, bore_r, layer="CUTS", lbl=None):
@@ -148,12 +162,10 @@ def m1_catapult():
 
     for i in range(2):
         ox = s1x + i * (sw + GAP)
-        rect(msp, ox, s1y, sw, sh)
-        # Bottom tabs
-        tab_down(msp, ox + sw / 2 - 15, s1y)
-        tab_down(msp, ox + sw / 2 + 15, s1y)
-        # Arm pass-through slot at pivot height (arm lies flat, rocks in slot)
-        slot_h(msp, ox + sw / 2, s1y + sh - 15, 22, SLOT_W)
+        rect_with_bottom_tabs(msp, ox, s1y, sw, sh,
+                              [ox + sw / 2 - 15, ox + sw / 2 + 15])
+        # Pivot hole — dowel axle passes through both supports and the arm
+        circ(msp, ox + sw / 2, s1y + sh - 15, M3_R)
         lbl = "M1 SIDE L" if i == 0 else "M1 SIDE R"
         label(msp, ox + 5, s1y + sh - 8, lbl)
 
@@ -161,42 +173,51 @@ def m1_catapult():
     ax, ay = bx, by - 30 - GAP
     aw, ah = 280, 20
     rect(msp, ax, ay, aw, ah)
-    # Stopper holes — dowels prevent arm sliding out of side support slots
-    # Side supports sit at base x=40 and x=160; stoppers just outside each
-    circ(msp, ax + 35, ay + ah / 2, M3_R)           # stopper L
-    circ(msp, ax + 165, ay + ah / 2, M3_R)          # stopper R
+    # Pivot hole — dowel passes through side L → arm → side R
+    circ(msp, ax + 100, ay + ah / 2, M3_R)
     slot_v(msp, ax + aw - 15, ay + ah / 2, SLOT_W, TAB_W)  # cup slot
     label(msp, ax + 5, ay + ah - 7, "M1 ARM (BIRCH PLY)")
 
     # ---- ROW 2 contd: Stop piece (below side supports, not overlapping) ----
     stw, sth = 60, 50
     stx = ax + aw + GAP
-    sty = by - GAP - sth  # place below base bottom to avoid side support overlap
-    rect(msp, stx, sty, stw, sth)
-    tab_down(msp, stx + stw / 2, sty)
+    sty = by - GAP - sth
+    rect_with_bottom_tabs(msp, stx, sty, stw, sth, [stx + stw / 2])
     label(msp, stx + 5, sty + sth - 8, "M1 STOP")
 
-    # ---- ROW 3: Cup / Cradle (cross shape, folds up) ----
+    # ---- ROW 3: Cup / Cradle (cross shape, folds up — single outline) ----
     cbase = 40
     flap = 20
-    # Total footprint: (flap + cbase + flap) × (flap + cbase + flap) = 80 × 80
     cx = bx
-    cy = ay - (cbase + 2 * flap) - GAP  # full cross height = cbase + 2*flap
-    # Centre square
-    rect(msp, cx + flap, cy + flap, cbase, cbase)
-    # 4 flaps
-    rect(msp, cx + flap, cy + flap + cbase, cbase, flap)   # top
-    rect(msp, cx + flap, cy, cbase, flap)                   # bottom
-    rect(msp, cx, cy + flap, flap, cbase)                   # left
-    rect(msp, cx + flap + cbase, cy + flap, flap, cbase)    # right
-    # Tab for arm attachment on bottom flap
-    tab_down(msp, cx + flap + cbase / 2, cy)
-    # Score fold lines
-    line(msp, cx + flap, cy + flap, cx + flap + cbase, cy + flap)
-    line(msp, cx + flap, cy + flap + cbase, cx + flap + cbase, cy + flap + cbase)
-    line(msp, cx + flap, cy + flap, cx + flap, cy + flap + cbase)
-    line(msp, cx + flap + cbase, cy + flap, cx + flap + cbase, cy + flap + cbase)
-    label(msp, cx + flap + 2, cy + flap + cbase / 2, "M1 CUP")
+    cy = ay - (cbase + 2 * flap) - GAP
+    f, c = flap, cbase
+    tw2 = TAB_W / 2
+    # Single cross-shaped outline with integrated tab on bottom flap
+    cross_pts = [
+        (cx + f, cy + 2*f + c),           # top-left of top flap
+        (cx + f + c, cy + 2*f + c),       # top-right of top flap
+        (cx + f + c, cy + f + c),         # inner top-right
+        (cx + 2*f + c, cy + f + c),       # right flap top-right
+        (cx + 2*f + c, cy + f),           # right flap bottom-right
+        (cx + f + c, cy + f),             # inner bottom-right
+        (cx + f + c, cy),                 # bottom flap bottom-right
+        (cx + f + c/2 + tw2, cy),         # tab right
+        (cx + f + c/2 + tw2, cy - MAT),   # tab bottom-right
+        (cx + f + c/2 - tw2, cy - MAT),   # tab bottom-left
+        (cx + f + c/2 - tw2, cy),         # tab left
+        (cx + f, cy),                     # bottom flap bottom-left
+        (cx + f, cy + f),                 # inner bottom-left
+        (cx, cy + f),                     # left flap bottom-left
+        (cx, cy + f + c),                 # left flap top-left
+        (cx + f, cy + f + c),             # inner top-left
+    ]
+    polygon(msp, cross_pts)
+    # Score fold lines (engrave only)
+    line(msp, cx + f, cy + f, cx + f + c, cy + f)
+    line(msp, cx + f, cy + f + c, cx + f + c, cy + f + c)
+    line(msp, cx + f, cy + f, cx + f, cy + f + c)
+    line(msp, cx + f + c, cy + f, cx + f + c, cy + f + c)
+    label(msp, cx + f + 2, cy + f + c / 2, "M1 CUP")
 
     save(doc, "M1_Catapult.dxf")
 
@@ -225,9 +246,8 @@ def m2_pulley_lift():
 
     for i in range(2):
         ox = u1x + i * (uw + GAP)
-        rect(msp, ox, by, uw, uh)
-        tab_down(msp, ox + uw / 2 - 15, by)
-        tab_down(msp, ox + uw / 2 + 15, by)
+        rect_with_bottom_tabs(msp, ox, by, uw, uh,
+                              [ox + uw / 2 - 15, ox + uw / 2 + 15])
         slot_h(msp, ox + uw / 2, by + uh - MAT / 2, TAB_W, SLOT_W)  # beam slot
         circ(msp, ox + uw / 2, by + uh - 20, 2)  # string guide
         lbl = "M2 UP L" if i == 0 else "M2 UP R"
@@ -240,9 +260,7 @@ def m2_pulley_lift():
     tbw, tbh = 126, 30
     tbx = bx
     tby = row2y
-    rect(msp, tbx, tby, tbw, tbh)
-    tab_down(msp, tbx + 8, tby)
-    tab_down(msp, tbx + tbw - 8, tby)
+    rect_with_bottom_tabs(msp, tbx, tby, tbw, tbh, [tbx + 8, tbx + tbw - 8])
     circ(msp, tbx + tbw / 2, tby + tbh / 2, M3_R)     # pulley axle
     circ(msp, tbx + tbw / 2 + 15, tby + tbh / 2, 2)   # string hole
     label(msp, tbx + 5, tby + tbh - 8, "M2 TOP BEAM")
@@ -304,8 +322,7 @@ def m3_automata_card():
     f1x = bx + bw + GAP
     for i in range(2):
         ox = f1x + i * (fw + GAP)
-        rect(msp, ox, by, fw, fh)
-        tab_down(msp, ox + fw / 2, by)
+        rect_with_bottom_tabs(msp, ox, by, fw, fh, [ox + fw / 2])
         circ(msp, ox + fw / 2, by + 40, M3_R)         # axle hole
         slot_v(msp, ox + fw / 2, by + fh - 20, SLOT_W, 30)  # follower guide
         lbl = "M3 FRAME L" if i == 0 else "M3 FRAME R"
@@ -390,9 +407,8 @@ def m4_gear_down():
 
     for i in range(2):
         ox = a1x + i * (aw + GAP)
-        rect(msp, ox, by, aw, ah)
-        tab_down(msp, ox + aw / 2 - 15, by)
-        tab_down(msp, ox + aw / 2 + 15, by)
+        rect_with_bottom_tabs(msp, ox, by, aw, ah,
+                              [ox + aw / 2 - 15, ox + aw / 2 + 15])
         # TT motor shaft hole on one side, output axle on other
         circ(msp, ox + aw / 2 - 10, by + ah - 25, SHAFT_R)  # TT D-shaft
         circ(msp, ox + aw / 2 + 10, by + ah - 25, M3_R)     # output axle
@@ -406,14 +422,12 @@ def m4_gear_down():
     mmw, mmh = 80, 40
     mmx = bx
     mmy = row2y
-    rect(msp, mmx, mmy, mmw, mmh)
+    rect_with_bottom_tabs(msp, mmx, mmy, mmw, mmh, [mmx + mmw / 2])
     # TT motor body cutout (24 × 20mm slot)
     rect(msp, mmx + mmw / 2 - TT_W / 2, mmy + mmh / 2 - TT_H / 2, TT_W, TT_H)
     # M3 mounting holes on either side
     circ(msp, mmx + 12, mmy + mmh / 2, M3_R)
     circ(msp, mmx + mmw - 12, mmy + mmh / 2, M3_R)
-    # Tab for base
-    tab_down(msp, mmx + mmw / 2, mmy)
     label(msp, mmx + 5, mmy + mmh - 8, "M4 TT MOUNT")
 
     # ---- ROW 2 contd: Small gear (12T mod 2) ----
@@ -464,9 +478,8 @@ def m5_hand_crank():
     f1x = bx + bw + GAP
     for i in range(2):
         ox = f1x + i * (fw + GAP)
-        rect(msp, ox, by, fw, fh)
-        tab_down(msp, ox + fw / 2 - 15, by)
-        tab_down(msp, ox + fw / 2 + 15, by)
+        rect_with_bottom_tabs(msp, ox, by, fw, fh,
+                              [ox + fw / 2 - 15, ox + fw / 2 + 15])
         circ(msp, ox + fw / 2, by + 35, M3_R)    # axle hole
         slot_v(msp, ox + fw / 2, by + fh - 30, SLOT_W, 35)   # follower guide
         slot_h(msp, ox + fw / 2, by + fh - 5, TAB_W, SLOT_W)  # scene slot
@@ -516,9 +529,7 @@ def m5_hand_crank():
     row3y = row2_bottom - GAP - 80  # scene panel is 80 tall
     spx = bx
     spy = row3y
-    rect(msp, spx, spy, 100, 80)
-    tab_down(msp, spx + 10, spy)
-    tab_down(msp, spx + 90, spy)
+    rect_with_bottom_tabs(msp, spx, spy, 100, 80, [spx + 10, spx + 90])
     slot_v(msp, spx + 50, spy + 10, SLOT_W + 2, 15)
     label(msp, spx + 5, spy + 70, "M5 SCENE PANEL")
 
@@ -550,9 +561,8 @@ def m6_tower_crane():
     t1x = bx + bw + GAP
     for i in range(2):
         ox = t1x + i * (tw + GAP)
-        rect(msp, ox, by, tw, th)
-        tab_down(msp, ox + tw / 2 - 10, by)
-        tab_down(msp, ox + tw / 2 + 10, by)
+        rect_with_bottom_tabs(msp, ox, by, tw, th,
+                              [ox + tw / 2 - 10, ox + tw / 2 + 10])
         slot_h(msp, ox + tw / 2, by + th - 10, TAB_W, SLOT_W)  # jib
         slot_h(msp, ox + tw / 2, by + 80, TAB_W, SLOT_W)  # brace 1
         slot_h(msp, ox + tw / 2, by + 160, TAB_W, SLOT_W) # brace 2
@@ -565,8 +575,7 @@ def m6_tower_crane():
 
     # Jib — 220 × 25
     jx, jy = bx, row2y
-    rect(msp, jx, jy, 220, 25)
-    tab_down(msp, jx + 10, jy)
+    rect_with_bottom_tabs(msp, jx, jy, 220, 25, [jx + 10])
     circ(msp, jx + 205, jy + 12.5, M3_R)   # pulley axle
     circ(msp, jx + 205, jy + 22, 2)         # string hole
     label(msp, jx + 5, jy + 17, "M6 JIB")
@@ -575,10 +584,24 @@ def m6_tower_crane():
     cbx = jx + 220 + GAP
     for i in range(2):
         ox = cbx + i * (20 + GAP)
-        rect(msp, ox, row2y, 20, 20)
-        # Side tabs
-        rect(msp, ox - MAT, row2y + 10 - TAB_W / 2, MAT, TAB_W)
-        rect(msp, ox + 20, row2y + 10 - TAB_W / 2, MAT, TAB_W)
+        brw, brh = 20, 20
+        tab_bot = row2y + brh / 2 - TAB_W / 2
+        tab_top = row2y + brh / 2 + TAB_W / 2
+        # Single outline with left + right side tabs
+        polygon(msp, [
+            (ox, row2y + brh),             # top-left
+            (ox + brw, row2y + brh),       # top-right
+            (ox + brw, tab_top),           # right edge → tab top
+            (ox + brw + MAT, tab_top),     # right tab out
+            (ox + brw + MAT, tab_bot),     # right tab bottom
+            (ox + brw, tab_bot),           # right edge → tab bottom
+            (ox + brw, row2y),             # bottom-right
+            (ox, row2y),                   # bottom-left
+            (ox, tab_bot),                 # left edge → tab bottom
+            (ox - MAT, tab_bot),           # left tab out
+            (ox - MAT, tab_top),           # left tab top
+            (ox, tab_top),                 # left edge → tab top
+        ])
         label(msp, ox + 2, row2y + 5, f"BR{i+1}", height=2)
 
     # ---- ROW 3: Winch drum, Gears, Hook, Crank ----
@@ -668,9 +691,8 @@ def m7_rover():
 
     for i in range(2):
         oy = by + i * (srh + GAP)
-        rect(msp, sr1x, oy, srw, srh)
-        tab_down(msp, sr1x + 25, oy)
-        tab_down(msp, sr1x + srw - 25, oy)
+        rect_with_bottom_tabs(msp, sr1x, oy, srw, srh,
+                              [sr1x + 25, sr1x + srw - 25])
         # Axle U-notches at top edge
         for notch_x in [20, srw - 20]:
             msp.add_lwpolyline([
@@ -702,12 +724,11 @@ def m7_rover():
     # TT Motor mount — 80 × 40
     mmx, mmy = bx, row3y
     mmw, mmh = 80, 40
-    rect(msp, mmx, mmy, mmw, mmh)
+    rect_with_bottom_tabs(msp, mmx, mmy, mmw, mmh, [mmx + mmw / 2])
     # TT motor rectangular slot
     rect(msp, mmx + mmw / 2 - TT_W / 2, mmy + mmh / 2 - TT_H / 2, TT_W, TT_H)
     circ(msp, mmx + 12, mmy + mmh / 2, M3_R)
     circ(msp, mmx + mmw - 12, mmy + mmh / 2, M3_R)
-    tab_down(msp, mmx + mmw / 2, mmy)
     label(msp, mmx + 5, mmy + mmh - 8, "M7 TT MOUNT")
 
     # Small gear (10T mod 2) — OD 24
