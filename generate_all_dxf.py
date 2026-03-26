@@ -175,7 +175,6 @@ def m1_catapult():
     rect(msp, ax, ay, aw, ah)
     # Pivot hole — dowel passes through side L → arm → side R
     circ(msp, ax + 100, ay + ah / 2, M3_R)
-    slot_v(msp, ax + aw - 15, ay + ah / 2, SLOT_W, TAB_W)  # cup slot
     label(msp, ax + 5, ay + ah - 7, "M1 ARM (BIRCH PLY)")
 
     # ---- ROW 2 contd: Stop piece (below side supports, not overlapping) ----
@@ -191,8 +190,7 @@ def m1_catapult():
     cx = bx
     cy = ay - (cbase + 2 * flap) - GAP
     f, c = flap, cbase
-    tw2 = TAB_W / 2
-    # Single cross-shaped outline with integrated tab on bottom flap
+    # Single cross-shaped outline (glued onto arm, no tab needed)
     cross_pts = [
         (cx + f, cy + 2*f + c),           # top-left of top flap
         (cx + f + c, cy + 2*f + c),       # top-right of top flap
@@ -201,10 +199,6 @@ def m1_catapult():
         (cx + 2*f + c, cy + f),           # right flap bottom-right
         (cx + f + c, cy + f),             # inner bottom-right
         (cx + f + c, cy),                 # bottom flap bottom-right
-        (cx + f + c/2 + tw2, cy),         # tab right
-        (cx + f + c/2 + tw2, cy - MAT),   # tab bottom-right
-        (cx + f + c/2 - tw2, cy - MAT),   # tab bottom-left
-        (cx + f + c/2 - tw2, cy),         # tab left
         (cx + f, cy),                     # bottom flap bottom-left
         (cx + f, cy + f),                 # inner bottom-left
         (cx, cy + f),                     # left flap bottom-left
